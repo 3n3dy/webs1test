@@ -1,0 +1,227 @@
+/* === ANIMATIONS === */
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes ringPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(168, 85, 247, 0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* === UTILITY CLASSES === */
+@layer utilities {
+  /* Gradient animation */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+
+  /* Float animation */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Slow spin */
+  .animate-spin-slow {
+    animation: spin 3s linear infinite;
+  }
+
+  /* Fade in */
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+  }
+
+  /* Scale in */
+  .animate-scale-in {
+    animation: scale-in 0.2s ease-out;
+  }
+
+  /* === 3D FLIP ANIMATION === */
+  .flip-card-container {
+    perspective: 2000px;
+    overflow: visible;
+  }
+  
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    min-height: 500px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: visible;
+  }
+  
+  .flip-card-inner.flipped {
+    transform: rotateY(180deg);
+  }
+  
+  .flip-card-front,
+  .flip-card-back {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: visible;
+  }
+  
+  .flip-card-back {
+    transform: rotateY(180deg);
+  }
+  
+  /* === HOVER LIFT === */
+  .hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* === RING PULSE === */
+  .ring-pulse {
+    animation: ringPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* === SMOOTH BORDER TRANSITION === */
+  .border-transition {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* === GRADIENT TEXT === */
+  .gradient-text {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* === SCALE BOUNCE === */
+  .scale-bounce {
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+  
+  .scale-bounce:hover {
+    transform: scale(1.05);
+  }
+  
+  /* === GLOW EFFECT === */
+  .glow-on-hover {
+    position: relative;
+    z-index: 0;
+  }
+  
+  .glow-on-hover::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, #a855f7, #ec4899, #a855f7);
+    border-radius: inherit;
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+    filter: blur(20px);
+  }
+  
+  .glow-on-hover:hover::before {
+    opacity: 0.7;
+  }
+}
+
+/* === PACKAGES SECTION OVERFLOW FIX === */
+#packages .max-w-7xl {
+  overflow: visible;
+  padding-top: 2rem;
+}
+
+#packages .grid {
+  overflow: visible;
+}
+
+.flip-card-container {
+  overflow: visible;
+}
+
+.flip-card-inner {
+  overflow: visible;
+}
+
+.flip-card-front,
+.flip-card-back {
+  overflow: visible;
+}
+
+/* Scroll control only for content */
+.flip-card-back .space-y-4 {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 400px;
+}
+
+/* === SMOOTH SCROLLING === */
+html {
+  scroll-behavior: smooth;
+}
+
+/* === CUSTOM SCROLLBAR === */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #a855f7, #ec4899);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #9333ea, #db2777);
+}
