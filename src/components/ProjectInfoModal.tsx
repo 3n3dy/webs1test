@@ -33,7 +33,7 @@ function ProjectInfoModal({ isOpen, onOpenChange }: ProjectInfoModalProps) {
       description: "Знання зберігаються у цифровій базі, незалежні від персоналу, що забезпечує стійкість бізнесу та швидку адаптацію нових співробітників.",
       gradient: "from-violet-400 to-violet-500",
     },
-    { 
+    {
       icon: <Fingerprint className="w-8 h-8" />,
       animationType: "swing" as const,
       title: "Об'єктивний контроль",
@@ -75,7 +75,7 @@ function ProjectInfoModal({ isOpen, onOpenChange }: ProjectInfoModalProps) {
             className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 md:p-6 rounded-t-3xl flex items-center justify-between z-10">
+            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 md:p-6 rounded-t-3xl flex items-center justify-between z-20 shadow-2xl">
               <Dialog.Title className="text-base md:text-xl font-semibold flex items-center gap-3">
                 <Zap className="w-6 h-6 md:w-8 md:h-8" />
                 <span className="hidden sm:inline">«ЗВИЧАЇКА» — корпоративна екосистема управління знаннями</span>
@@ -86,6 +86,7 @@ function ProjectInfoModal({ isOpen, onOpenChange }: ProjectInfoModalProps) {
                 <X size={28} className="hidden md:block" />
               </Dialog.Close>
             </div>
+
 
             <Dialog.Description className="sr-only">
               Детальна інформація про проєкт управління знаннями
@@ -126,48 +127,42 @@ function ProjectInfoModal({ isOpen, onOpenChange }: ProjectInfoModalProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
                   {cards.map((item, idx) => {
                     const isActive = activeCard === idx;
-                    
+
                     return (
                       <div
                         key={idx}
                         onMouseEnter={() => setActiveCard(idx)}
                         onMouseLeave={() => setActiveCard(null)}
                         onClick={() => setActiveCard(activeCard === idx ? null : idx)}
-                        className={`relative bg-white rounded-xl border transition-all duration-300 overflow-hidden cursor-pointer min-h-[120px] ${
-                          isActive 
-                            ? 'border-transparent shadow-2xl' 
+                        className={`relative bg-white rounded-xl border transition-all duration-300 overflow-hidden cursor-pointer min-h-[120px] ${isActive
+                            ? 'border-transparent shadow-2xl'
                             : 'border-gray-200 hover:shadow-lg'
-                        }`}
+                          }`}
                       >
-                        <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} transition-opacity duration-500 ${
-                          isActive ? 'opacity-100' : 'opacity-0'
-                        }`} />
+                        <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} transition-opacity duration-500 ${isActive ? 'opacity-100' : 'opacity-0'
+                          }`} />
 
                         <div className="relative z-10 p-4 md:p-6">
                           <div className="flex justify-center mb-3">
-                            <div className={`transition-all duration-300 ${
-                              isActive 
-                                ? 'text-white scale-110' 
+                            <div className={`transition-all duration-300 ${isActive
+                                ? 'text-white scale-110'
                                 : 'text-purple-600'
-                            }`}>
+                              }`}>
                               <AnimatedIcon type={item.animationType}>
                                 {item.icon}
                               </AnimatedIcon>
                             </div>
                           </div>
 
-                          <h4 className={`text-base md:text-lg font-semibold text-center mb-2 transition-colors duration-300 ${
-                            isActive ? 'text-white' : 'text-gray-900'
-                          }`}>
+                          <h4 className={`text-base md:text-lg font-semibold text-center mb-2 transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-900'
+                            }`}>
                             {item.title}
                           </h4>
 
-                          <div className={`overflow-hidden transition-all duration-500 ${
-                            isActive ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
-                          }`}>
-                            <p className={`text-xs md:text-sm text-center pt-2 transition-colors duration-300 ${
-                              isActive ? 'text-white/90' : 'text-gray-600'
+                          <div className={`overflow-hidden transition-all duration-500 ${isActive ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
                             }`}>
+                            <p className={`text-xs md:text-sm text-center pt-2 transition-colors duration-300 ${isActive ? 'text-white/90' : 'text-gray-600'
+                              }`}>
                               {item.description}
                             </p>
                           </div>
