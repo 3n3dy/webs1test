@@ -2,7 +2,7 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./webs1test/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -30,7 +30,7 @@ export default {
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
+    "./webs1test/**/*.{js,jsx,ts,tsx}",
     "./index.html"
   ],
   theme: {

@@ -39,7 +39,7 @@ const AboutAuthorModal = memo(() => {
       <Dialog.Trigger asChild>
         <div className="bg-white/10 backdrop-blur-md rounded-full border border-white/20 flex items-center gap-6 cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] group w-fit mx-auto">
           <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-purple-500/30 group-hover:border-purple-400">
-            <img src="./src/MasterHanna.jpg" alt="Hanna" className="w-full h-full object-cover" />
+            <img src="/webs1test/masterhanna.jpg" alt="Hanna" className="w-full h-full object-cover" />
           </div>
           <div className='pr-4'>
             <p className="text-white text-lg font-medium pr-4">Ганна Марчак</p>
@@ -64,6 +64,7 @@ const AboutAuthorModal = memo(() => {
               </Dialog.Title>
               <Dialog.Close asChild>
                 <button className="hover:bg-white/20 rounded-full p-2 transition-all outline-none border-none focus:outline-none">
+               
                   <X size={28} />
                 </button>
               </Dialog.Close>

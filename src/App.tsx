@@ -1325,31 +1325,6 @@ const Footer = memo(() => {
                 <X size={28} />
               </button>
             </div>
-
-            <div className="p-8 space-y-6">
-              {faqData.map((faq, index) => (
-                <div key={index} className="border-b border-gray-200 pb-6 last:border-0">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-start gap-2">
-                    <span className="text-purple-600 flex-shrink-0">Q{index + 1}:</span>
-                    {faq.q}
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed pl-8">{faq.a}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="sticky bottom-0 bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-b-3xl text-center border-t border-purple-200">
-              <p className="text-gray-700 mb-4">Не знайшли відповідь на своє питання?</p>
-              <button
-                onClick={() => {
-                  setIsFaqOpen(false);
-                  window.open('https://forms.gle/uSNtM1HLngGEXucUA', '_blank');
-                }}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-2xl font-semibold hover:shadow-xl transition-all hover:scale-105"
-              >
-                Замовити консультацію
-              </button>
-            </div>
           </div>
         </div>
       )}

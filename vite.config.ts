@@ -3,14 +3,15 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  base: '/webs1test/',  // ✅ ДОДАНО для GitHub Pages
   css: {
-    postcss: './postcss.config.js',  // ← ДОДАНО!
+    postcss: './postcss.config.js',
   },
   server: {
     host: '0.0.0.0',
     port: 5173,
     watch: {
-      usePolling: true,  // ← ДОДАНО (допомагає на Windows)
+      usePolling: true,
     }
   }
 })
