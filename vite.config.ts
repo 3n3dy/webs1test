@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/webs1test/',  // ✅ ДОДАНО для GitHub Pages
   css: {
     postcss: './postcss.config.js',
   },
