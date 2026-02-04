@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import sitemap from 'vite-plugin-sitemap'
 
+
 export default defineConfig({
   base: '/',
   plugins: [
@@ -14,8 +15,26 @@ export default defineConfig({
       lastmod: new Date(),
       readable: true,
       exclude: ['/404'],
+      robots: [                           // ← додайте цей блок
+        {
+          userAgent: '*',
+          allow: '/',
+        },
+        {
+          userAgent: 'GPTBot',
+          disallow: '/',
+        },
+        {
+          userAgent: 'ChatGPT-User',
+          disallow: '/',
+        },
+        {
+          userAgent: 'CCBot',
+          disallow: '/',
+        },
+      ],                                  // ← до сюди
     }),
-  ], // <-- Перевірте, щоб ця дужка була тут!
+  ],
   css: {
     postcss: './postcss.config.js',
   },
