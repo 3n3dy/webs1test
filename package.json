@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://3n3dy.github.io/webs1test",
+  "homepage": "https://zvychaika.com",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
