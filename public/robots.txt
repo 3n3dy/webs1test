@@ -1,14 +1,7 @@
-# ЗВИЧАЇКА - Корпоративна екосистема управління знаннями
-# Оновлено: 2026-02-04
-
 User-agent: *
 Allow: /
-Crawl-delay: 1
 
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
+# Block AI training bots
 User-agent: GPTBot
 Disallow: /
 
@@ -17,22 +10,17 @@ Disallow: /
 
 User-agent: CCBot
 Disallow: /
-Disallow: /*.json$
-Disallow: /*.map$
-Disallow: /node_modules/
-Disallow: /.git/
 
-Allow: /assets/
-Allow: /*.png$
-Allow: /*.jpg$
-Allow: /*.webp$
-Allow: /*.svg$
+User-agent: anthropic-ai
+Disallow: /
 
-Disallow: /*?utm_source=
-Disallow: /*?utm_medium=
-Disallow: /*?utm_campaign=
-Disallow: /*?fbclid=
-Disallow: /*?gclid=
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
 
 Sitemap: https://zvychaika.com/sitemap.xml
-Sitemap: https://www.zvychaika.com/sitemap.xml
