@@ -6,20 +6,9 @@ export default defineConfig({
   plugins: [
     react(),
     sitemap({
-      hostname: 'https://zvychaika.com',
-      dynamicRoutes: [
-        '/',
-      ],
-      changefreq: 'weekly',
-      priority: 1.0,
-      lastmod: new Date(),
-      readable: true,
-      exclude: ['/404']
-    })
-  ],
-  css: {
-    postcss: './postcss.config.js',
-  },
+  hostname: 'https://zvychaika.com',
+  generateRobotsTxt: true,
+    }),
   server: {
     host: '0.0.0.0',
     port: 5173,
