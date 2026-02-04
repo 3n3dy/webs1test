@@ -1,4 +1,3 @@
-@"
 User-agent: *
 Allow: /
 
@@ -12,4 +11,3 @@ User-agent: CCBot
 Disallow: /
 
 Sitemap: https://zvychaika.com/sitemap.xml
-"@ | Out-File -FilePath robots.txt -Encoding UTF8 -NoNewline
