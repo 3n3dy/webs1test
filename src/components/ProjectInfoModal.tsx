@@ -96,17 +96,14 @@ function ProjectInfoModal({ isOpen, onOpenChange }: ProjectInfoModalProps) {
               <section>
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">💁🏼‍♀️ Про проєкт:</h3>
                 <p className="text-sm md:text-base">
-                  Звичаїка — системне рішення для малого та середнього бізнесу, що формує інфраструктуру знань і процесів та піднімає ефективність на новий рівень.
-Проєкт поєднує ЗВИЧАЇ — глибоке дослідження та розуміння внутрішніх процесів компанії — та ЧАЙ - звільняє час власника для фокусу на стратегії й масштабуванні, забезпечуючи стабільну роботу бізнесу.
+                  <b className="text-purple-600">Звичаїка</b> — системне рішення для малого та середнього бізнесу, що формує інфраструктуру знань і процесів та піднімає ефективність на новий рівень.
+                  Проєкт поєднує <b className="text-purple-600">ЗВИЧАЇ</b> — глибоке дослідження та розуміння внутрішніх процесів компанії — та <b className="text-purple-600">ЧАЙ</b> - звільняє час власника для фокусу на стратегії й масштабуванні, забезпечуючи стабільну роботу бізнесу.
                 </p>
-                <div className="p-4 md:p-8 space-y-6 text-gray-700 leading-relaxed">
-              <section>
+                <div className="p-4 md:p-2 space-y-6 text-gray-700 leading-relaxed"></div>
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">👩‍💻 Як це працює:</h3>
                 <p className="text-sm md:text-base">
                   Ми не ламаємо, а впорядковуємо: досліджуємо, як ваш бізнес уже функціонує, і трансформуємо це у зрозумілі алгоритми, перетворюємо розрізнені файли та знання співробітників на єдину цифрову систему.
                 </p>
-                <p>Cтворюємо «мозок» компанії: формуємо бази знань, Wiki-центри, інструкції та «Книги Новачка» для швидкої адаптації.
-Автоматизуємо розумно: впроваджуємо CRM, ERP, LMS та таск-менеджери, які відповідають саме вашій культурі, а не просто модним трендам.</p>
                 <p className="mt-2 text-sm md:text-base">
                   Це системне рішення, яке перетворює розрізнені файли та досвід у головах працівників на структурований цифровий актив компанії.
                 </p>
@@ -114,25 +111,30 @@ function ProjectInfoModal({ isOpen, onOpenChange }: ProjectInfoModalProps) {
                   Проєкт забезпечує перехід від ручного управління до автономної системи. Ми впроваджуємо комплексну інфраструктуру: Wiki-центри для знань, LMS-платформи для навчання, таск-менеджери для контролю за процесами, а також чіткі оргсхеми та «Книги Новачка» для швидкої адаптації.
                 </p>
               </section>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                {/* Перша секція */}
+       <section>
+  <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">💡 Чому це важливо?</h3>
+  <ul className="space-y-2">
+    {[
+      { text: "20-30% робочого часу витрачається на пошук інформації" },
+      { text: "Втрата знань при звільненні співробітників коштує $2,500-$5,000 на одного" },
+      { text: "Компанії з knowledge base продуктивніші на 30%" }
+    ].map((item, idx) => (
+      <li key={idx} className="flex items-start gap-3">
+        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+        <span className="text-sm md:text-base whitespace-nowrap">{item.text}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
+
+              </div>
+
 
               <section>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">💡 Чому це важливо?</h3>
-                <ul className="space-y-2">
-                  {[
-                    { text: "20-30% робочого часу витрачається на пошук інформації" },
-                    { text: "Втрата знань при звільненні співробітників коштує $2,500-$5,000 на одного" },
-                    { text: "Компанії з knowledge base продуктивніші на 30%" }
-                  ].map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm md:text-base">{item.text}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              <section>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">🚀 Що ми пропонуємо?</h3>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-6">🚀 Що ми пропонуємо?</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
                   {cards.map((item, idx) => {
                     const isActive = activeCard === idx;
@@ -144,8 +146,8 @@ function ProjectInfoModal({ isOpen, onOpenChange }: ProjectInfoModalProps) {
                         onMouseLeave={() => setActiveCard(null)}
                         onClick={() => setActiveCard(activeCard === idx ? null : idx)}
                         className={`relative bg-white rounded-xl border transition-all duration-300 overflow-hidden cursor-pointer min-h-[120px] ${isActive
-                            ? 'border-transparent shadow-2xl'
-                            : 'border-gray-200 hover:shadow-lg'
+                          ? 'border-transparent shadow-2xl'
+                          : 'border-gray-200 hover:shadow-lg'
                           }`}
                       >
                         <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} transition-opacity duration-500 ${isActive ? 'opacity-100' : 'opacity-0'
@@ -154,8 +156,8 @@ function ProjectInfoModal({ isOpen, onOpenChange }: ProjectInfoModalProps) {
                         <div className="relative z-10 p-4 md:p-6">
                           <div className="flex justify-center mb-3">
                             <div className={`transition-all duration-300 ${isActive
-                                ? 'text-white scale-110'
-                                : 'text-purple-600'
+                              ? 'text-white scale-110'
+                              : 'text-purple-600'
                               }`}>
                               <AnimatedIcon type={item.animationType}>
                                 {item.icon}
@@ -186,13 +188,39 @@ function ProjectInfoModal({ isOpen, onOpenChange }: ProjectInfoModalProps) {
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 md:p-6 rounded-b-3xl text-center border-t border-purple-200">
               <p className="text-sm md:text-base text-gray-700 mb-4">Готові створити свою базу знань?</p>
               <Dialog.Close asChild>
-                <button
-                  onClick={() => window.open('https://forms.gle/uSNtM1HLngGEXucUA', '_blank')}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 md:px-8 py-2 md:py-3 rounded-full font-semibold hover:shadow-xl transition-all hover:scale-105 text-sm md:text-base"
-                >
-                  Замовити консультацію
-                </button>
-              </Dialog.Close>
+  <div className="flex flex-col items-center gap-3">
+    <button
+      onClick={() => window.open('https://forms.gle/uSNtM1HLngGEXucUA', '_blank')}
+      className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 md:px-40 py-2 md:py-1 rounded-2xl font-semibold hover:shadow-xl transition-all hover:scale-105 text-sm md:text-base"
+    >
+      Замовити консультацію
+    </button>
+    
+    <div className="flex items-center gap-3 text-sm text-gray-500">
+      <div className="h-px bg-gray-300 w-8"></div>
+      <span>або</span>
+      <div className="h-px bg-gray-300 w-8"></div>
+    </div>
+    
+    <div className="flex items-center justify-center gap-3">
+      <a href="https://t.me/bonnie_benay" target="_blank" rel="noopener noreferrer" 
+         className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all">
+        <img alt="Telegram" className="w-7 h-7" src="https://img.icons8.com/color/48/telegram-app.png" />
+      </a>
+      <a href="viber://chat?number=+380950571649" 
+         className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all">
+        <img alt="Viber" className="w-7 h-7" src="https://img.icons8.com/color/48/viber.png" />
+      </a>
+      <a href="tel:+380950571649" 
+         className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all">
+        <svg className="w-5 h-5" fill="purple" viewBox="0 0 24 24">
+          <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</Dialog.Close>
+
             </div>
           </div>
         </Dialog.Content>

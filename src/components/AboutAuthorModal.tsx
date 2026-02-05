@@ -191,14 +191,34 @@ const AboutAuthorModal = memo(() => {
 
               {/* Footer Button */}
               <div className="text-center">
-                <Dialog.Close asChild>
-                  <button
-                    onClick={() => window.open('https://forms.gle/uSNtM1HLngGEXucUA', '_blank')}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-2xl font-semibold hover:shadow-xl transition-all hover:scale-105"
-                  >
-                    Зв'язатися зі мною
-                  </button>
-                </Dialog.Close>
+<button className="px-6 py-3 rounded-2xl hover:border-gray-300 hover:bg-gray-50 transition-all">
+  <div className="flex items-center justify-center gap-3">
+    <span className="text-base md:text-lg font-semibold text-gray-900">
+      Зв'язатися зі мною
+    </span>
+    
+    <a href="https://t.me/bonnie_benay" target="_blank" rel="noopener noreferrer"
+       className="w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all">
+      <img alt="Telegram" className="w-7 h-7" src="https://img.icons8.com/color/48/telegram-app.png" />
+    </a>
+    
+    <a href="viber://chat?number=+380950571649"
+       className="w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all">
+      <img alt="Viber" className="w-7 h-7" src="https://img.icons8.com/color/48/viber.png" />
+    </a>
+    
+    <a href="tel:+380950571649"
+       className="w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all">
+      <svg className="w-6 h-6" fill="purple" viewBox="0 0 24 24">
+        <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
+      </svg>
+    </a>
+  </div>
+</button>
+
+
+
+
               </div>
             </div>
           </div>

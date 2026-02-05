@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useState, useEffect, useRef, useCallback, useMemo, memo, lazy, Suspense } from 'react';
-import { AlertCircle, CheckCircle, Zap, BookOpen, Users, TrendingUp, HelpCircle, X, Laptop, Smartphone, PenTool, FileText, Folder, Brain, Coffee, Book, Calendar, Lightbulb, Paperclip, Mail, MessageCircle, ChevronDown, Phone } from 'lucide-react';
+import { AlertCircle, CheckCircle, Zap, BookOpen, ChevronRight, Users, TrendingUp, HelpCircle, X, Laptop, Smartphone, PenTool, FileText, Folder, Brain, Coffee, Book, Calendar, Lightbulb, Paperclip, Mail, MessageCircle, ChevronDown, Phone } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -257,23 +257,95 @@ const HeroSection = memo(() => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+const getChaosStyles = () => {
+  const isMobile = window.innerWidth < 768;
+  const range = isMobile ? 150 : 500;
+  
+  return {
+    x: Math.random() * range * 2 - range,
+    y: Math.random() * range * 2 - range,
+    rotate: Math.random() * 360 - 180,
+    scale: Math.random() * 1.5 + 0.3,
+    opacity: 0
+  };
+};
 
-  return (
-    <div className="-mt-8 relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-800 to-pink-800 overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
-        <div className="text-center max-w-5xl mx-auto space-y-8">
+const getOrderStyles = () => ({
+  x: 0,
+  y: -50,
+  rotate: 0,
+  scale: 0.5,
+  opacity: 0
+});
+
+return (
+  <div className="-mt-8 relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-800 to-pink-800 overflow-hidden">
+    <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+    <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+      <div className="text-center max-w-5xl mx-auto space-y-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: { transition: { staggerChildren: 0.03, delayChildren: 0.2 } }
+            }}
+            className="text-center w-full overflow-visible"
           >
-            <h1 className="text-6xl md:text-7xl font-semibold text-white mb-6 leading-tight">
-              Перетворіть хаос на систему
-            </h1>
-            <p className="text-lg md:text-xl text-purple-200 max-w-3xl mx-auto">
-              Від безладдя до структурованого навчання
-            </p>
+            <h1 className="text-[5vw] sm:text-[6vw] md:text-5xl lg:text-6xl xl:text-7xl font-semibold text-white mb-4 md:mb-6 leading-tight flex justify-center items-center whitespace-nowrap overflow-visible">
+  {"ПЕРЕТВОРІТЬ ХАОС НА СИСТЕМУ".split("").map((char, index) => (
+    <motion.span
+      key={index}
+      style={{ display: "inline-block", whiteSpace: "pre" }}
+      variants={{
+        hidden: {
+          opacity: 0,
+          x: typeof window !== 'undefined' && window.innerWidth < 768 
+            ? Math.random() * 400 - 200 
+            : Math.random() * 800 - 400,
+          y: typeof window !== 'undefined' && window.innerWidth < 768 
+            ? Math.random() * 400 - 200 
+            : Math.random() * 800 - 400,
+          rotate: Math.random() * 360,
+          scale: 2,
+        },
+        visible: {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          rotate: 0,
+          scale: 1,
+          transition: { type: "spring", damping: 15, stiffness: 100 }
+        }
+      }}
+    >
+      {char}
+    </motion.span>
+  ))}
+</h1>
+
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 1.5, duration: 0.8 }}
+  className="max-w-5xl mx-auto px-4"
+>
+  <p className="text-sm sm:text-base md:text-2xl lg:text-3xl xl:text-4xl font-medium md:font-semibold text-purple-200 tracking-normal whitespace-normal md:whitespace-nowrap">
+    Системність для малого та середнього бізнесу.
+  </p>
+  <p className="mt-4 sm:mt-6 md:mt-8 text-sm sm:text-base md:text-2xl lg:text-3xl xl:text-3xl font-medium md:font-semibold text-purple-200 tracking-normal whitespace-normal md:whitespace-nowrap">
+    Від безладдя до структурованого навчання.
+  </p>
+</motion.div>
+
+          </motion.div>
+
+
+
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1577,6 +1649,7 @@ const KnowledgeBaseLanding = () => {
       <Header />
       <HeroSection />
       <PainSolutionSection />
+      
       <PackagesSection />
       <PersonalCalculationSection />
       <ReasonsSection />
