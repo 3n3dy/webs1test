@@ -18,7 +18,7 @@ const Header = memo(() => {
           <img
             alt="Лого ЗВИЧАЇКА"
             className="w-full h-full object-contain"
-            src="/favi1.png"
+            src="/favicon.png"
           />
         </button>
 
