@@ -222,8 +222,9 @@ const HeroSection = memo(() => {
         obj.vx *= 0.99;
         obj.vy *= 0.99;
 
+        const baseSpeed = 0.3;
         const currentSpeed = Math.sqrt(obj.vx * obj.vx + obj.vy * obj.vy);
-        if (currentSpeed < 0.3) {
+        if (currentSpeed < baseSpeed) {
           const angle = Math.random() * Math.PI * 2;
           obj.vx += Math.cos(angle) * 0.1;
           obj.vy += Math.sin(angle) * 0.1;
@@ -257,7 +258,7 @@ const HeroSection = memo(() => {
           obj.vy = -Math.abs(obj.vy) * 0.8;
         }
 
-        // Collision detection (оптимізовано)
+        // Collision detection
         for (let i = index + 1; i < objects.length; i++) {
           const other = objects[i];
           const dx2 = other.x - obj.x;
@@ -269,8 +270,10 @@ const HeroSection = memo(() => {
             const angle = Math.atan2(dy2, dx2);
             const targetX = obj.x + Math.cos(angle) * minDist;
             const targetY = obj.y + Math.sin(angle) * minDist;
-            const ax = (targetX - other.x) * 0.15;
-            const ay = (targetY - other.y) * 0.15;
+
+            const ax = (targetX - other.x) * 0.08; // ✅ М'якше
+            const ay = (targetY - other.y) * 0.08;
+
             obj.vx -= ax;
             obj.vy -= ay;
             other.vx += ax;
@@ -278,13 +281,19 @@ const HeroSection = memo(() => {
           }
         }
 
-        // Малювання
+        // ✅ МАЛЮВАННЯ З ЗАЛИВКОЮ ТА ОБВОДКОЮ
         ctx.save();
         ctx.translate(obj.x, obj.y);
         ctx.rotate(obj.rotation);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+
+        ctx.fillStyle = "rgba(168, 85, 247, 0.2)"; // Фіолетова заливка
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.4)"; // Фіолетова обводка
         ctx.lineWidth = 2.5;
-        ctx.stroke(createIconPath(obj.icon, obj.size));
+
+        const iconPath = createIconPath(obj.icon, obj.size);
+        ctx.fill(iconPath); // Спочатку заливка
+        ctx.stroke(iconPath); // Потім обводка
+
         ctx.restore();
       });
 
@@ -333,7 +342,12 @@ const HeroSection = memo(() => {
 
   return (
     <div className="-mt-8 relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-800 to-pink-800 overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 pointer-events-auto"
+        style={{ touchAction: "none", zIndex: 1 }}
+      />
+
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
         <div className="text-center max-w-5xl mx-auto space-y-8">
           <motion.div
@@ -414,11 +428,11 @@ const HeroSection = memo(() => {
           >
             {/* Про проєкт - новий modal */}
             <Suspense fallback={<div className="h-[72px] w-[200px]" />}>
-              <ProjectInfoModal 
-  isOpen={isProjectInfoOpen} 
-  onOpenChange={setIsProjectInfoOpen}
-  onOpenContact={() => setIsContactModalOpen(true)} // ✅ ДОДАЙТЕ ЦЕЙ РЯДОК
-/>
+              <ProjectInfoModal
+                isOpen={isProjectInfoOpen}
+                onOpenChange={setIsProjectInfoOpen}
+                onOpenContact={() => setIsContactModalOpen(true)} // ✅ ДОДАЙТЕ ЦЕЙ РЯДОК
+              />
               <ContactModal
                 isOpen={isContactModalOpen}
                 onClose={() => setIsContactModalOpen(false)}
@@ -494,6 +508,7 @@ const HeroSection = memo(() => {
 HeroSection.displayName = "HeroSection";
 
 // Секція Pain/Solution (memo для оптимізації)
+
 const PainSolutionSection = memo(() => {
   const [activePain, setActivePain] = useState<number | null>(null);
 
@@ -549,7 +564,7 @@ const PainSolutionSection = memo(() => {
   );
 
   return (
-    <div className="py-24 bg-gradient-to-r from-purple-50 to-white">
+    <div className="py-14 bg-gradient-to-r from-purple-50 to-white">
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -561,9 +576,9 @@ const PainSolutionSection = memo(() => {
             Ваш час - для стратегій
           </h2>
           <div className="flex items-center max-w-3xl mx-auto my-8">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-400 to-purple-400"></div>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-400 to-transparent"></div>
             <div className="px-4 text-2xl">⚡</div>
-            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-purple-400 to-purple-400"></div>
+            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-purple-400 to-transparent"></div>
           </div>
 
           <p className="text-xl font-semibold text-gray-600 max-w-3xl mx-auto">
@@ -571,7 +586,6 @@ const PainSolutionSection = memo(() => {
           </p>
         </motion.div>
 
-        {/* Додано items-start, щоб картки не тягнулися по висоті сусіда */}
         <div className="grid md:grid-cols-3 gap-8 items-start">
           {pains.map((pain, index) => (
             <motion.div
@@ -581,21 +595,35 @@ const PainSolutionSection = memo(() => {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               animate={{
-                height: "auto", // Автоматична висота без жорстких лімітів
+                height: "auto",
               }}
-              className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer min-h-[218px]"
+              className="group relative bg-white rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer min-h-[150px]"
               onMouseEnter={() => setActivePain(index)}
               onMouseLeave={() => setActivePain(null)}
               onClick={() => setActivePain(activePain === index ? null : index)}
             >
-              <div
-                className={`text-6xl mb-4 transition-all duration-300 ${activePain === index ? "scale-110" : ""}`}
-              >
-                {pain.icon}
+              {/* ✅ FLEX LAYOUT: Емодзі зліва, текст справа */}
+              <div className="flex items-start gap-4 mb-4">
+                <div
+                  className={`text-5xl flex-shrink-0 transition-all duration-300 ${activePain === index ? "scale-110" : ""}`}
+                >
+                  {pain.icon}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 flex-1">
+                  {pain.title}
+                </h3>
               </div>
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                {pain.title}
-              </h3>
+
+              {/* ✅ АНІМОВАНА ГАЛОЧКА */}
+              <div className="flex justify-center mb-2">
+                <ChevronDown
+                  className={`w-6 h-6 text-purple-400 transition-all duration-300 ${
+                    activePain === index
+                      ? "rotate-180 text-purple-600"
+                      : "animate-bounce"
+                  }`}
+                />
+              </div>
 
               <div
                 className={`overflow-hidden transition-all duration-500 ${activePain === index ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"}`}
@@ -1030,7 +1058,7 @@ const PackagesSection = memo(() => {
   return (
     <div
       id="packages"
-      className="py-24 bg-gradient-to-b from-white to-purple-50"
+      className="py-4 bg-gradient-to-b from-white to-purple-50"
     >
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
@@ -1039,7 +1067,7 @@ const PackagesSection = memo(() => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-5xl font-semibold text-gray-900 mb-6">
+          <h2 className="text-5xl font-semibold text-gray-900 mb-5">
             Оберіть свій <span className="text-stone-600">шлях</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -1202,70 +1230,69 @@ const PersonalCalculationSection = memo(() => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="py-14 bg-white pb-10">
+    <div className="py-16 bg-white pb-14">
       <div className="max-w-4xl mx-auto px-6">
         <motion.div
-  initial={{ opacity: 0, y: 20 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  className="space-y-6"
->
-  <button
-    onClick={() => setIsModalOpen(true)}
-    className="w-full py-6 px-8 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-3xl font-semibold text-xl hover:shadow-2xl hover:scale-105 transition-all shadow-xl"
-  >
-    <div className="text-center">
-      <div className="text-3xl font-semibold mb-3">
-        Замовити безкоштовний прорахунок
-      </div>
-      <div className="text-base font-normal opacity-90">
-        Натисніть, щоб заповнити форму та дізнайтеся приблизну вартість
-        та терміни
-      </div>
-    </div>
-  </button>
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="space-y-6"
+        >
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="w-full py-6 px-8 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-3xl font-semibold text-xl hover:shadow-2xl hover:scale-105 transition-all shadow-xl"
+          >
+            <div className="text-center">
+              <div className="text-3xl font-semibold mb-3">
+                Замовити безкоштовний прорахунок
+              </div>
+              <div className="text-base font-normal opacity-90">
+                Натисніть, щоб заповнити форму та дізнайтеся приблизну вартість
+                та терміни
+              </div>
+            </div>
+          </button>
 
-  {/* ✅ БЛОК З КОНТАКТАМИ */}
-  <div className="flex items-center gap-3 text-sm text-gray-500 justify-center">
-    <div className="h-px bg-gray-300 w-16"></div>
-    <span>або</span>
-    <div className="h-px bg-gray-300 w-16"></div>
-  </div>
+          {/* ✅ БЛОК З КОНТАКТАМИ */}
+          <div className="flex items-center gap-3 text-sm text-gray-500 justify-center">
+            <div className="h-px bg-gray-300 w-16"></div>
+            <span>або</span>
+            <div className="h-px bg-gray-300 w-16"></div>
+          </div>
 
-  <div className="flex items-center justify-center gap-4">
-    <a
-      href="https://t.me/bonnie_benay"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all shadow-md"
-    >
-      <img
-        alt="Telegram"
-        className="w-8 h-8"
-        src="https://img.icons8.com/color/48/telegram-app.png"
-      />
-    </a>
-    <a
-      href="viber://chat?number=+380950571649"
-      className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all shadow-md"
-    >
-      <img
-        alt="Viber"
-        className="w-8 h-8"
-        src="https://img.icons8.com/color/48/viber.png"
-      />
-    </a>
-    <a
-      href="tel:+380950571649"
-      className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all shadow-md"
-    >
-      <svg className="w-6 h-6" fill="purple" viewBox="0 0 24 24">
-        <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
-      </svg>
-    </a>
-  </div>
-</motion.div>
-
+          <div className="flex items-center justify-center gap-4">
+            <a
+              href="https://t.me/bonnie_benay"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all shadow-md"
+            >
+              <img
+                alt="Telegram"
+                className="w-8 h-8"
+                src="https://img.icons8.com/color/48/telegram-app.png"
+              />
+            </a>
+            <a
+              href="viber://chat?number=+380950571649"
+              className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all shadow-md"
+            >
+              <img
+                alt="Viber"
+                className="w-8 h-8"
+                src="https://img.icons8.com/color/48/viber.png"
+              />
+            </a>
+            <a
+              href="tel:+380950571649"
+              className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all shadow-md"
+            >
+              <svg className="w-6 h-6" fill="purple" viewBox="0 0 24 24">
+                <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
+              </svg>
+            </a>
+          </div>
+        </motion.div>
       </div>
 
       {/* Модалка форми */}
@@ -1348,8 +1375,8 @@ const ReasonsSection = memo(() => {
   );
 
   return (
-    <div className="py-24 bg-gradient-to-b from-purple-50 to-white">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="py-14 bg-gradient-to-b from-purple-50 to-white">
+      <div className="max-w-7xl mx-auto px-6 pb-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1396,10 +1423,10 @@ const ReasonsSection = memo(() => {
 
               {/* ✅ ГАЛОЧКА-ПІДКАЗКА */}
               <div className="flex justify-center mb-2">
-                <ChevronDown 
+                <ChevronDown
                   className={`w-6 h-6 text-purple-400 transition-all duration-300 ${
-                    activeReason === index 
-                      ? "rotate-180 text-purple-600" 
+                    activeReason === index
+                      ? "rotate-180 text-purple-600"
                       : "animate-bounce"
                   }`}
                 />
@@ -1470,7 +1497,7 @@ const ProcessSection = memo(() => {
 
   return (
     <div className="py-16 bg-gradient-to-b from-purple-50 to-white">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-6 pb-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1542,12 +1569,21 @@ const CTASection = memo(() => {
             Замовте безкоштовну консультацію — ми проаналізуємо вашу ситуацію та
             запропонуємо рішення
           </p>
+        </motion.div>
+      </div>
 
-          {/* Контакти */}
-          <div className="flex items-center max-w-3xl mx-auto my-8">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-400 to-purple-400"></div>
-            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-purple-400 to-purple-400"></div>
-          </div>
+      {/* ✅ ПЕРША ЛІНІЯ - ВИНЕСЕНА НАЗОВНІ */}
+      <div className="flex items-center max-w-4xl mx-auto my-8 px-6">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent from-0% via-purple-400/40 via-40% to-purple-400 to-100%"></div>
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent from-0% via-purple-400/40 via-40% to-purple-400 to-100%"></div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
           <h3 className="text-2xl md:text-3xl font-semibold mb-8 text-purple-200">
             Контакти
           </h3>
@@ -1614,13 +1650,23 @@ const CTASection = memo(() => {
               </span>
             </a>
           </div>
-          <div className="flex items-center max-w-3xl mx-auto my-3">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-400 to-purple-400"></div>
-            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-purple-400 to-purple-400"></div>
-          </div>
+        </motion.div>
+      </div>
 
+      {/* ✅ ДРУГА ЛІНІЯ - ВИНЕСЕНА НАЗОВНІ */}
+      <div className="flex items-center max-w-7xl mx-auto my-7 px-6">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-400 to-purple-400"></div>
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent via-purple-400 to-purple-400"></div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
           {/* Переваги */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-5">
             {[
               {
                 icon: <Zap className="w-8 h-8" />,
