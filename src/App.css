@@ -225,3 +225,17 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #9333ea, #db2777);
 }
+@keyframes glow {
+  0%, 100% { 
+    text-shadow: 0 0 5px #9333ea, 0 0 10px #9333ea;
+    color: #9333ea;
+  }
+  50% { 
+    text-shadow: 0 0 20px #ffffff, 0 0 30px #ec4899;
+    color: #ffffff;
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
