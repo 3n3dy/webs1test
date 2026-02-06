@@ -45,6 +45,7 @@ import ContactModal from "./components/ContactModal";
 // Lazy loading для важких компонентів
 const AboutAuthorModal = lazy(() => import("./components/AboutAuthorModal"));
 const ProjectInfoModal = lazy(() => import("./components/ProjectInfoModal"));
+
 const CANVAS_ICONS = [
   FileText,
   Folder,
@@ -58,9 +59,10 @@ const CANVAS_ICONS = [
   Lightbulb,
   Paperclip,
 ];
+
 const CANVAS_OBJECT_COUNT = 20;
-const MOUSE_INFLUENCE_DISTANCE = 180;
-const ANIMATION_FRAME_THROTTLE = 16;
+const MOUSE_REPEL_DISTANCE = 150; // Відстань, на якій іконки "втікають" від курсору
+const MOUSE_REPEL_FORCE = 1.2; // Сила відштовхування від курсору
 
 // Утиліта для throttle
 const throttle = (func: Function, delay: number) => {
@@ -77,11 +79,10 @@ const throttle = (func: Function, delay: number) => {
 // Винесені компоненти для кращої оптимізації
 const HeroSection = memo(() => {
   const [isProjectInfoOpen, setIsProjectInfoOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const objectsRef = useRef<any[]>([]);
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const animationFrameRef = useRef<number | null>(null);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -90,47 +91,33 @@ const HeroSection = memo(() => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Встановлення розміру canvas
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resizeCanvas();
+    // Встановлення розміру
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     // Ініціалізація об'єктів
-    interface CanvasObject {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      size: number;
-      icon: (typeof CANVAS_ICONS)[number];
-      rotation: number;
-      rotationSpeed: number;
-    }
-    const objects: CanvasObject[] = [];
-    for (let i = 0; i < CANVAS_OBJECT_COUNT; i++) {
+    const objects: any[] = [];
+    for (let i = 0; i < 20; i++) {
       objects.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8,
-        size: 25 + Math.random() * 25,
+        vx: (Math.random() - 0.5) * 2,
+        vy: (Math.random() - 0.5) * 2,
+        size: 30 + Math.random() * 20,
         icon: CANVAS_ICONS[Math.floor(Math.random() * CANVAS_ICONS.length)],
         rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.03,
+        rotationSpeed: (Math.random() - 0.5) * 0.02,
       });
     }
-    objectsRef.current = objects;
 
-    // Throttled mouse handler
-    const handleMouseMove = throttle((e: MouseEvent) => {
+    // ПРОСТИЙ Mouse handler БЕЗ THROTTLE
+    const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       mouseRef.current = {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
       };
-    }, ANIMATION_FRAME_THROTTLE);
+    };
 
     const handleMouseLeave = () => {
       mouseRef.current = { x: -1000, y: -1000 };
@@ -139,160 +126,403 @@ const HeroSection = memo(() => {
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseleave", handleMouseLeave);
 
-    // Створення шляхів іконок (мемоізовано)
-    const createIconPath = (icon: any, size: number) => {
-      const path = new Path2D();
+    // Створення іконок
+    const drawIcon = (
+      ctx: CanvasRenderingContext2D,
+      icon: any,
+      size: number,
+    ) => {
+      ctx.strokeStyle = "rgba(168, 85, 247, 0.6)";
+      ctx.fillStyle = "rgba(168, 85, 247, 0.15)";
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
 
       if (icon === FileText) {
-        path.rect(-size * 0.4, -size * 0.5, size * 0.8, size);
-        path.moveTo(-size * 0.2, -size * 0.2);
-        path.lineTo(size * 0.2, -size * 0.2);
-        path.moveTo(-size * 0.2, 0);
-        path.lineTo(size * 0.2, 0);
-        path.moveTo(-size * 0.2, size * 0.2);
-        path.lineTo(size * 0.2, size * 0.2);
-      } else if (icon === Folder) {
-        path.rect(-size * 0.5, -size * 0.2, size, size * 0.6);
-        path.rect(-size * 0.5, -size * 0.4, size * 0.4, size * 0.2);
-      } else if (icon === Laptop) {
-        path.rect(-size * 0.6, -size * 0.3, size * 1.2, size * 0.5);
-        path.rect(-size * 0.7, size * 0.2, size * 1.4, size * 0.1);
-      } else if (icon === Brain) {
-        path.arc(-size * 0.2, 0, size * 0.3, 0, Math.PI * 2);
-        path.arc(size * 0.2, 0, size * 0.3, 0, Math.PI * 2);
-        path.arc(0, -size * 0.2, size * 0.25, 0, Math.PI * 2);
-      } else if (icon === Smartphone) {
-        path.roundRect(
-          -size * 0.25,
-          -size * 0.5,
-          size * 0.5,
-          size,
-          size * 0.08,
-        );
-        path.arc(0, -size * 0.35, size * 0.05, 0, Math.PI * 2);
-      } else if (icon === PenTool) {
-        path.moveTo(0, -size * 0.5);
-        path.lineTo(size * 0.12, size * 0.5);
-        path.lineTo(-size * 0.12, size * 0.5);
-        path.closePath();
-      } else if (icon === Coffee) {
-        path.moveTo(-size * 0.3, -size * 0.3);
-        path.lineTo(-size * 0.35, size * 0.3);
-        path.lineTo(size * 0.35, size * 0.3);
-        path.lineTo(size * 0.3, -size * 0.3);
-        path.closePath();
-        path.arc(size * 0.5, 0, size * 0.15, -Math.PI / 2, Math.PI / 2);
-      } else if (icon === Book) {
-        path.rect(-size * 0.4, -size * 0.5, size * 0.8, size);
-        path.moveTo(-size * 0.4, -size * 0.5);
-        path.lineTo(0, -size * 0.4);
-        path.lineTo(-size * 0.4, -size * 0.3);
-      } else if (icon === Calendar) {
-        path.rect(-size * 0.4, -size * 0.4, size * 0.8, size * 0.8);
-        path.rect(-size * 0.3, -size * 0.5, size * 0.1, size * 0.2);
-        path.rect(size * 0.2, -size * 0.5, size * 0.1, size * 0.2);
-      } else if (icon === Lightbulb) {
-        path.arc(0, -size * 0.2, size * 0.3, 0, Math.PI * 2);
-        path.rect(-size * 0.15, size * 0.1, size * 0.3, size * 0.3);
-      } else if (icon === Paperclip) {
-        path.arc(0, -size * 0.2, size * 0.2, Math.PI, 0);
-        path.lineTo(size * 0.2, size * 0.3);
-        path.arc(0, size * 0.3, size * 0.2, 0, Math.PI);
-      }
+        // Документ з більш деталізованим виглядом
+        ctx.fillRect(-size * 0.35, -size * 0.45, size * 0.7, size * 0.9);
+        ctx.strokeRect(-size * 0.35, -size * 0.45, size * 0.7, size * 0.9);
 
-      return path;
+        // Загнутий кутик
+        ctx.beginPath();
+        ctx.moveTo(size * 0.15, -size * 0.45);
+        ctx.lineTo(size * 0.35, -size * 0.25);
+        ctx.lineTo(size * 0.15, -size * 0.25);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Лінії тексту
+        for (let i = 0; i < 4; i++) {
+          const y = -size * 0.15 + i * size * 0.15;
+          ctx.beginPath();
+          ctx.moveTo(-size * 0.25, y);
+          ctx.lineTo(size * 0.25, y);
+          ctx.stroke();
+        }
+      } else if (icon === Folder) {
+        // Папка з тінню
+        ctx.fillRect(-size * 0.45, -size * 0.15, size * 0.9, size * 0.55);
+        ctx.strokeRect(-size * 0.45, -size * 0.15, size * 0.9, size * 0.55);
+
+        // Вкладка
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.45, -size * 0.35);
+        ctx.lineTo(-size * 0.1, -size * 0.35);
+        ctx.lineTo(-size * 0.05, -size * 0.15);
+        ctx.lineTo(-size * 0.45, -size * 0.15);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else if (icon === Laptop) {
+        // Ноутбук з екраном
+        ctx.fillRect(-size * 0.5, -size * 0.35, size, size * 0.5);
+        ctx.strokeRect(-size * 0.5, -size * 0.35, size, size * 0.5);
+
+        // Рамка екрану
+        ctx.strokeRect(-size * 0.45, -size * 0.3, size * 0.9, size * 0.38);
+
+        // База ноутбука
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.6, size * 0.15);
+        ctx.lineTo(size * 0.6, size * 0.15);
+        ctx.lineTo(size * 0.5, size * 0.25);
+        ctx.lineTo(-size * 0.5, size * 0.25);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Трекпад
+        ctx.strokeRect(-size * 0.15, size * 0.17, size * 0.3, size * 0.06);
+      } else if (icon === Brain) {
+        // Мозок з півкулями
+        ctx.beginPath();
+        ctx.arc(-size * 0.15, -size * 0.05, size * 0.28, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(size * 0.15, -size * 0.05, size * 0.28, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Звивини мозку
+        ctx.beginPath();
+        ctx.arc(-size * 0.15, size * 0.1, size * 0.15, 0, Math.PI);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(size * 0.15, size * 0.1, size * 0.15, 0, Math.PI);
+        ctx.stroke();
+
+        // Центральна лінія
+        ctx.beginPath();
+        ctx.moveTo(0, -size * 0.3);
+        ctx.lineTo(0, size * 0.25);
+        ctx.stroke();
+      } else if (icon === Smartphone) {
+        // Смартфон
+        const cornerRadius = size * 0.1;
+        ctx.beginPath();
+        ctx.roundRect(
+          -size * 0.22,
+          -size * 0.45,
+          size * 0.44,
+          size * 0.9,
+          cornerRadius,
+        );
+        ctx.fill();
+        ctx.stroke();
+
+        // Екран
+        ctx.strokeRect(-size * 0.18, -size * 0.38, size * 0.36, size * 0.68);
+
+        // Камера
+        ctx.beginPath();
+        ctx.arc(0, -size * 0.4, size * 0.04, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Кнопка Home
+        ctx.beginPath();
+        ctx.arc(0, size * 0.38, size * 0.06, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (icon === PenTool) {
+        // Перо/олівець
+        ctx.beginPath();
+        ctx.moveTo(0, -size * 0.45);
+        ctx.lineTo(size * 0.08, size * 0.3);
+        ctx.lineTo(size * 0.08, size * 0.45);
+        ctx.lineTo(-size * 0.08, size * 0.45);
+        ctx.lineTo(-size * 0.08, size * 0.3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Гумка
+        ctx.fillStyle = "rgba(168, 85, 247, 0.3)";
+        ctx.fillRect(-size * 0.1, -size * 0.45, size * 0.2, size * 0.15);
+        ctx.strokeRect(-size * 0.1, -size * 0.45, size * 0.2, size * 0.15);
+
+        // Кінчик олівця
+        ctx.fillStyle = "rgba(168, 85, 247, 0.15)";
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.08, size * 0.3);
+        ctx.lineTo(0, size * 0.5);
+        ctx.lineTo(size * 0.08, size * 0.3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else if (icon === Coffee) {
+        // Чашка кави
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.3, -size * 0.25);
+        ctx.lineTo(-size * 0.35, size * 0.3);
+        ctx.quadraticCurveTo(
+          -size * 0.35,
+          size * 0.35,
+          -size * 0.3,
+          size * 0.35,
+        );
+        ctx.lineTo(size * 0.3, size * 0.35);
+        ctx.quadraticCurveTo(size * 0.35, size * 0.35, size * 0.35, size * 0.3);
+        ctx.lineTo(size * 0.3, -size * 0.25);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Ручка
+        ctx.beginPath();
+        ctx.arc(
+          size * 0.5,
+          size * 0.05,
+          size * 0.18,
+          -Math.PI / 2,
+          Math.PI / 2,
+        );
+        ctx.stroke();
+
+        // Пара
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.15, -size * 0.35);
+        ctx.quadraticCurveTo(
+          -size * 0.1,
+          -size * 0.45,
+          -size * 0.15,
+          -size * 0.5,
+        );
+        ctx.moveTo(0, -size * 0.35);
+        ctx.quadraticCurveTo(0.05 * size, -size * 0.45, 0, -size * 0.5);
+        ctx.moveTo(size * 0.15, -size * 0.35);
+        ctx.quadraticCurveTo(
+          size * 0.1,
+          -size * 0.45,
+          size * 0.15,
+          -size * 0.5,
+        );
+        ctx.stroke();
+      } else if (icon === Book) {
+        // Книга
+        ctx.fillRect(-size * 0.35, -size * 0.45, size * 0.7, size * 0.9);
+        ctx.strokeRect(-size * 0.35, -size * 0.45, size * 0.7, size * 0.9);
+
+        // Корінець
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.8)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(0, -size * 0.45);
+        ctx.lineTo(0, size * 0.45);
+        ctx.stroke();
+
+        // Сторінки збоку
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.4)";
+        for (let i = 0; i < 5; i++) {
+          const offset = -size * 0.32 + i * size * 0.16;
+          ctx.beginPath();
+          ctx.moveTo(size * 0.35, offset);
+          ctx.lineTo(size * 0.4, offset);
+          ctx.stroke();
+        }
+      } else if (icon === Calendar) {
+        // Календар
+        ctx.fillRect(-size * 0.35, -size * 0.35, size * 0.7, size * 0.7);
+        ctx.strokeRect(-size * 0.35, -size * 0.35, size * 0.7, size * 0.7);
+
+        // Кільця зверху
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.2, -size * 0.45);
+        ctx.lineTo(-size * 0.2, -size * 0.3);
+        ctx.moveTo(size * 0.2, -size * 0.45);
+        ctx.lineTo(size * 0.2, -size * 0.3);
+        ctx.stroke();
+
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(-size * 0.2, -size * 0.45, size * 0.06, 0, Math.PI * 2);
+        ctx.arc(size * 0.2, -size * 0.45, size * 0.06, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Заголовок календаря
+        ctx.lineWidth = 2.5;
+        ctx.fillStyle = "rgba(168, 85, 247, 0.3)";
+        ctx.fillRect(-size * 0.35, -size * 0.35, size * 0.7, size * 0.18);
+        ctx.strokeRect(-size * 0.35, -size * 0.35, size * 0.7, size * 0.18);
+
+        // Дати (сітка)
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.4)";
+        ctx.lineWidth = 1;
+        for (let i = 1; i < 5; i++) {
+          const x = -size * 0.35 + ((size * 0.7) / 5) * i;
+          ctx.beginPath();
+          ctx.moveTo(x, -size * 0.17);
+          ctx.lineTo(x, size * 0.35);
+          ctx.stroke();
+        }
+        for (let i = 1; i < 4; i++) {
+          const y = -size * 0.17 + ((size * 0.52) / 4) * i;
+          ctx.beginPath();
+          ctx.moveTo(-size * 0.35, y);
+          ctx.lineTo(size * 0.35, y);
+          ctx.stroke();
+        }
+      } else if (icon === Lightbulb) {
+        // Лампочка
+        ctx.beginPath();
+        ctx.arc(0, -size * 0.15, size * 0.25, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Цоколь
+        ctx.fillRect(-size * 0.12, size * 0.1, size * 0.24, size * 0.15);
+        ctx.strokeRect(-size * 0.12, size * 0.1, size * 0.24, size * 0.15);
+
+        ctx.fillRect(-size * 0.15, size * 0.25, size * 0.3, size * 0.1);
+        ctx.strokeRect(-size * 0.15, size * 0.25, size * 0.3, size * 0.1);
+
+        // Промені світла
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 8; i++) {
+          const angle = (i * Math.PI) / 4;
+          const x1 = Math.cos(angle) * size * 0.35;
+          const y1 = -size * 0.15 + Math.sin(angle) * size * 0.35;
+          const x2 = Math.cos(angle) * size * 0.5;
+          const y2 = -size * 0.15 + Math.sin(angle) * size * 0.5;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
+      } else if (icon === Paperclip) {
+        // Скріпка
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, -size * 0.1, size * 0.2, Math.PI, 0, false);
+        ctx.lineTo(size * 0.2, size * 0.3);
+        ctx.arc(0, size * 0.3, size * 0.2, 0, Math.PI, false);
+        ctx.lineTo(-size * 0.2, 0);
+        ctx.stroke();
+
+        // Внутрішня дуга
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, size * 0.25, size * 0.12, 0, Math.PI, false);
+        ctx.stroke();
+      }
     };
 
-    // Анімаційний цикл
+    // АНІМАЦІЯ
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       objects.forEach((obj, index) => {
+        // 1. ВІДШТОВХУВАННЯ ВІД МИШІ
         const dx = obj.x - mouseRef.current.x;
         const dy = obj.y - mouseRef.current.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+        const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < MOUSE_INFLUENCE_DISTANCE && distance > 0) {
-          const force =
-            (MOUSE_INFLUENCE_DISTANCE - distance) / MOUSE_INFLUENCE_DISTANCE;
-          obj.vx += (dx / distance) * force * 0.8;
-          obj.vy += (dy / distance) * force * 0.8;
+        if (dist < 200 && dist > 0) {
+          const force = (200 - dist) / 200;
+          obj.vx += (dx / dist) * force * 3;
+          obj.vy += (dy / dist) * force * 3;
         }
 
-        obj.vx *= 0.99;
-        obj.vy *= 0.99;
+        // 2. НЕВАГОМІСТЬ
+        obj.vx += (Math.random() - 0.5) * 0.1;
+        obj.vy += (Math.random() - 0.5) * 0.1;
 
-        const baseSpeed = 0.3;
-        const currentSpeed = Math.sqrt(obj.vx * obj.vx + obj.vy * obj.vy);
-        if (currentSpeed < baseSpeed) {
-          const angle = Math.random() * Math.PI * 2;
-          obj.vx += Math.cos(angle) * 0.1;
-          obj.vy += Math.sin(angle) * 0.1;
+        // 3. ТЕРТЯ
+        obj.vx *= 0.98;
+        obj.vy *= 0.98;
+
+        // 4. ОБМЕЖЕННЯ ШВИДКОСТІ
+        const speed = Math.sqrt(obj.vx * obj.vx + obj.vy * obj.vy);
+        if (speed > 6) {
+          obj.vx = (obj.vx / speed) * 6;
+          obj.vy = (obj.vy / speed) * 6;
         }
 
-        const maxSpeed = 4;
-        if (currentSpeed > maxSpeed) {
-          obj.vx = (obj.vx / currentSpeed) * maxSpeed;
-          obj.vy = (obj.vy / currentSpeed) * maxSpeed;
-        }
-
+        // 5. ОНОВЛЕННЯ ПОЗИЦІЇ
         obj.x += obj.vx;
         obj.y += obj.vy;
         obj.rotation += obj.rotationSpeed;
 
-        const padding = obj.size * 2;
-        if (obj.x < padding) {
-          obj.x = padding;
+        // 6. ВІДБИВАННЯ ВІД СТІН
+        const margin = obj.size * 1.5;
+        if (obj.x < margin) {
+          obj.x = margin;
           obj.vx = Math.abs(obj.vx) * 0.8;
         }
-        if (obj.x > canvas.width - padding) {
-          obj.x = canvas.width - padding;
+        if (obj.x > canvas.width - margin) {
+          obj.x = canvas.width - margin;
           obj.vx = -Math.abs(obj.vx) * 0.8;
         }
-        if (obj.y < padding) {
-          obj.y = padding;
+        if (obj.y < margin) {
+          obj.y = margin;
           obj.vy = Math.abs(obj.vy) * 0.8;
         }
-        if (obj.y > canvas.height - padding) {
-          obj.y = canvas.height - padding;
+        if (obj.y > canvas.height - margin) {
+          obj.y = canvas.height - margin;
           obj.vy = -Math.abs(obj.vy) * 0.8;
         }
 
-        // Collision detection
+        // 7. КОЛІЗІЇ
         for (let i = index + 1; i < objects.length; i++) {
           const other = objects[i];
           const dx2 = other.x - obj.x;
           const dy2 = other.y - obj.y;
-          const distance2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
-          const minDist = (obj.size + other.size) * 1.2;
+          const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+          const minDist = (obj.size + other.size) * 0.9;
 
-          if (distance2 < minDist && distance2 > 0) {
+          if (dist2 < minDist && dist2 > 0) {
             const angle = Math.atan2(dy2, dx2);
             const targetX = obj.x + Math.cos(angle) * minDist;
             const targetY = obj.y + Math.sin(angle) * minDist;
 
-            const ax = (targetX - other.x) * 0.08; // ✅ М'якше
-            const ay = (targetY - other.y) * 0.08;
+            const ax = (targetX - other.x) * 0.15;
+            const ay = (targetY - other.y) * 0.15;
 
             obj.vx -= ax;
             obj.vy -= ay;
             other.vx += ax;
             other.vy += ay;
+
+            const overlap = minDist - dist2;
+            const moveX = (dx2 / dist2) * (overlap / 2);
+            const moveY = (dy2 / dist2) * (overlap / 2);
+            obj.x -= moveX;
+            obj.y -= moveY;
+            other.x += moveX;
+            other.y += moveY;
           }
         }
 
-        // ✅ МАЛЮВАННЯ З ЗАЛИВКОЮ ТА ОБВОДКОЮ
+        // 8. МАЛЮВАННЯ
         ctx.save();
         ctx.translate(obj.x, obj.y);
         ctx.rotate(obj.rotation);
 
-        ctx.fillStyle = "rgba(168, 85, 247, 0.2)"; // Фіолетова заливка
-        ctx.strokeStyle = "rgba(168, 85, 247, 0.4)"; // Фіолетова обводка
-        ctx.lineWidth = 2.5;
-
-        const iconPath = createIconPath(obj.icon, obj.size);
-        ctx.fill(iconPath); // Спочатку заливка
-        ctx.stroke(iconPath); // Потім обводка
+        drawIcon(ctx, obj.icon, obj.size);
 
         ctx.restore();
       });
@@ -302,11 +532,17 @@ const HeroSection = memo(() => {
 
     animate();
 
-    // Обробник зміни розміру вікна (throttled)
-    const handleResize = throttle(() => {
-      resizeCanvas();
-    }, 250);
-
+    // Resize
+    const handleResize = () => {
+      const oldW = canvas.width;
+      const oldH = canvas.height;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      objects.forEach((obj) => {
+        obj.x = (obj.x / oldW) * canvas.width;
+        obj.y = (obj.y / oldH) * canvas.height;
+      });
+    };
     window.addEventListener("resize", handleResize);
 
     // Cleanup
@@ -319,37 +555,23 @@ const HeroSection = memo(() => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  const getChaosStyles = () => {
-    const isMobile = window.innerWidth < 768;
-    const range = isMobile ? 150 : 500;
-
-    return {
-      x: Math.random() * range * 2 - range,
-      y: Math.random() * range * 2 - range,
-      rotate: Math.random() * 360 - 180,
-      scale: Math.random() * 1.5 + 0.3,
-      opacity: 0,
-    };
-  };
-
-  const getOrderStyles = () => ({
-    x: 0,
-    y: -50,
-    rotate: 0,
-    scale: 0.5,
-    opacity: 0,
-  });
 
   return (
     <div className="-mt-8 relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-800 to-pink-800 overflow-hidden">
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 pointer-events-auto"
-        style={{ touchAction: "none", zIndex: 1 }}
+        className="absolute inset-0 w-full h-full"
+        style={{ pointerEvents: "auto", touchAction: "none" }}
       />
 
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
-        <div className="text-center max-w-5xl mx-auto space-y-8">
+      <div
+        className="relative z-10 flex items-center justify-center min-h-screen px-4"
+        style={{ pointerEvents: "none" }}
+      >
+        <div
+          className="text-center max-w-5xl mx-auto space-y-8"
+          style={{ pointerEvents: "auto" }}
+        >
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -420,18 +642,18 @@ const HeroSection = memo(() => {
               </motion.div>
             </motion.div>
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-6 justify-center items-center"
           >
-            {/* Про проєкт - новий modal */}
             <Suspense fallback={<div className="h-[72px] w-[200px]" />}>
               <ProjectInfoModal
                 isOpen={isProjectInfoOpen}
                 onOpenChange={setIsProjectInfoOpen}
-                onOpenContact={() => setIsContactModalOpen(true)} // ✅ ДОДАЙТЕ ЦЕЙ РЯДОК
+                onOpenContact={() => setIsContactModalOpen(true)}
               />
               <ContactModal
                 isOpen={isContactModalOpen}
@@ -439,6 +661,7 @@ const HeroSection = memo(() => {
               />
             </Suspense>
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -458,29 +681,17 @@ const HeroSection = memo(() => {
           viewBox="0 0 50 85"
           className="drop-shadow-md"
         >
-          {/* Два кружечки */}
           <circle cx="15" cy="8" r="5.5" fill="#ffffff" />
           <circle cx="35" cy="8" r="5.5" fill="#ffffff" />
-
-          {/* Фон для годинника - РОЗДІЛЕНО НА ДВІ ЧАСТИНИ */}
-          {/* Верхня частина - ПРОЗОРА */}
           <path d="M 8,18 L 42,18 L 28,42 L 22,42 Z" fill="transparent" />
-
-          {/* Нижня частина - БІЛА */}
           <path d="M 22,42 L 28,42 L 42,72 L 8,72 Z" fill="white" />
-
-          {/* Сіра рамка у формі пісочного годинника */}
           <path
             d="M 8,18 L 42,18 L 28,42 L 22,42 L 8,18 M 22,42 L 28,42 L 42,72 L 8,72 L 22,42"
             fill="none"
             stroke="#9ca3af"
             strokeWidth="3.5"
           />
-
-          {/* Верхній трикутник (прозорий) */}
           <polygon points="11,21 39,21 25,40" fill="none" />
-
-          {/* Центральна лінія */}
           <line
             x1="25"
             y1="40"
@@ -489,8 +700,6 @@ const HeroSection = memo(() => {
             stroke="#1f2937"
             strokeWidth="2"
           />
-
-          {/* Нижній трикутник (чорний пісок знизу) - з пульсацією */}
           <polygon points="25,44 11,69 39,69" fill="#1f2937" opacity="0.9">
             <animate
               attributeName="opacity"
