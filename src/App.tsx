@@ -204,101 +204,115 @@ const HeroSection = memo(() => {
     };
 
     // Анімаційний цикл
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Анімаційний цикл
+const animate = () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      objects.forEach((obj, index) => {
-        const dx = obj.x - mouseRef.current.x;
-        const dy = obj.y - mouseRef.current.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+  objects.forEach((obj, index) => {
+    // ✅ 1. ВІДШТОВХУВАННЯ ВІД МИШІ (покращене)
+    const dx = obj.x - mouseRef.current.x;
+    const dy = obj.y - mouseRef.current.y;
+    const distToMouse = Math.sqrt(dx * dx + dy * dy);
+    const repelRadius = 200;
 
-        if (distance < MOUSE_INFLUENCE_DISTANCE && distance > 0) {
-          const force =
-            (MOUSE_INFLUENCE_DISTANCE - distance) / MOUSE_INFLUENCE_DISTANCE;
-          obj.vx += (dx / distance) * force * 0.8;
-          obj.vy += (dy / distance) * force * 0.8;
-        }
+    if (distToMouse < repelRadius && distToMouse > 0) {
+      const force = (repelRadius - distToMouse) / repelRadius;
+      const pushPower = force * 2.5;
+      obj.vx += (dx / distToMouse) * pushPower;
+      obj.vy += (dy / distToMouse) * pushPower;
+    }
 
-        obj.vx *= 0.99;
-        obj.vy *= 0.99;
+    // ✅ 2. НЕВАГОМІСТЬ (легке блукання)
+    obj.vx += (Math.random() - 0.5) * 0.05;
+    obj.vy += (Math.random() - 0.5) * 0.05;
 
-        const baseSpeed = 0.3;
-        const currentSpeed = Math.sqrt(obj.vx * obj.vx + obj.vy * obj.vy);
-        if (currentSpeed < baseSpeed) {
-          const angle = Math.random() * Math.PI * 2;
-          obj.vx += Math.cos(angle) * 0.1;
-          obj.vy += Math.sin(angle) * 0.1;
-        }
+    // ✅ 3. ТЕРТЯ
+    obj.vx *= 0.98;
+    obj.vy *= 0.98;
 
-        const maxSpeed = 4;
-        if (currentSpeed > maxSpeed) {
-          obj.vx = (obj.vx / currentSpeed) * maxSpeed;
-          obj.vy = (obj.vy / currentSpeed) * maxSpeed;
-        }
+    // ✅ 4. ОБМЕЖЕННЯ ШВИДКОСТІ
+    const currentSpeed = Math.sqrt(obj.vx * obj.vx + obj.vy * obj.vy);
+    const maxSpeed = 5;
+    if (currentSpeed > maxSpeed) {
+      obj.vx = (obj.vx / currentSpeed) * maxSpeed;
+      obj.vy = (obj.vy / currentSpeed) * maxSpeed;
+    }
 
-        obj.x += obj.vx;
-        obj.y += obj.vy;
-        obj.rotation += obj.rotationSpeed;
+    // ✅ 5. ОНОВЛЕННЯ ПОЗИЦІЇ
+    obj.x += obj.vx;
+    obj.y += obj.vy;
+    obj.rotation += obj.rotationSpeed;
 
-        const padding = obj.size * 2;
-        if (obj.x < padding) {
-          obj.x = padding;
-          obj.vx = Math.abs(obj.vx) * 0.8;
-        }
-        if (obj.x > canvas.width - padding) {
-          obj.x = canvas.width - padding;
-          obj.vx = -Math.abs(obj.vx) * 0.8;
-        }
-        if (obj.y < padding) {
-          obj.y = padding;
-          obj.vy = Math.abs(obj.vy) * 0.8;
-        }
-        if (obj.y > canvas.height - padding) {
-          obj.y = canvas.height - padding;
-          obj.vy = -Math.abs(obj.vy) * 0.8;
-        }
+    // ✅ 6. ВІДБИВАННЯ ВІД СТІН
+    const margin = obj.size * 1.5;
+    if (obj.x < margin) {
+      obj.x = margin;
+      obj.vx = Math.abs(obj.vx) * 0.7;
+    }
+    if (obj.x > canvas.width - margin) {
+      obj.x = canvas.width - margin;
+      obj.vx = -Math.abs(obj.vx) * 0.7;
+    }
+    if (obj.y < margin) {
+      obj.y = margin;
+      obj.vy = Math.abs(obj.vy) * 0.7;
+    }
+    if (obj.y > canvas.height - margin) {
+      obj.y = canvas.height - margin;
+      obj.vy = -Math.abs(obj.vy) * 0.7;
+    }
 
-        // Collision detection
-        for (let i = index + 1; i < objects.length; i++) {
-          const other = objects[i];
-          const dx2 = other.x - obj.x;
-          const dy2 = other.y - obj.y;
-          const distance2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
-          const minDist = (obj.size + other.size) * 1.2;
+    // ✅ 7. КОЛІЗІЇ МІЖ ІКОНКАМИ (покращені)
+    for (let i = index + 1; i < objects.length; i++) {
+      const other = objects[i];
+      const dx2 = other.x - obj.x;
+      const dy2 = other.y - obj.y;
+      const dist = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+      const minDist = (obj.size + other.size) * 0.8;
 
-          if (distance2 < minDist && distance2 > 0) {
-            const angle = Math.atan2(dy2, dx2);
-            const targetX = obj.x + Math.cos(angle) * minDist;
-            const targetY = obj.y + Math.sin(angle) * minDist;
+      if (dist < minDist && dist > 0) {
+        const angle = Math.atan2(dy2, dx2);
+        const targetX = obj.x + Math.cos(angle) * minDist;
+        const targetY = obj.y + Math.sin(angle) * minDist;
 
-            const ax = (targetX - other.x) * 0.08; // ✅ М'якше
-            const ay = (targetY - other.y) * 0.08;
+        const ax = (targetX - other.x) * 0.2;
+        const ay = (targetY - other.y) * 0.2;
 
-            obj.vx -= ax;
-            obj.vy -= ay;
-            other.vx += ax;
-            other.vy += ay;
-          }
-        }
+        obj.vx -= ax;
+        obj.vy -= ay;
+        other.vx += ax;
+        other.vy += ay;
 
-        // ✅ МАЛЮВАННЯ З ЗАЛИВКОЮ ТА ОБВОДКОЮ
-        ctx.save();
-        ctx.translate(obj.x, obj.y);
-        ctx.rotate(obj.rotation);
+        // Розсування (щоб не застрявали)
+        const overlap = minDist - dist;
+        const moveX = (dx2 / dist) * (overlap / 2);
+        const moveY = (dy2 / dist) * (overlap / 2);
+        obj.x -= moveX;
+        obj.y -= moveY;
+        other.x += moveX;
+        other.y += moveY;
+      }
+    }
 
-        ctx.fillStyle = "rgba(168, 85, 247, 0.2)"; // Фіолетова заливка
-        ctx.strokeStyle = "rgba(168, 85, 247, 0.4)"; // Фіолетова обводка
-        ctx.lineWidth = 2.5;
+    // ✅ 8. МАЛЮВАННЯ
+    ctx.save();
+    ctx.translate(obj.x, obj.y);
+    ctx.rotate(obj.rotation);
 
-        const iconPath = createIconPath(obj.icon, obj.size);
-        ctx.fill(iconPath); // Спочатку заливка
-        ctx.stroke(iconPath); // Потім обводка
+    ctx.fillStyle = "rgba(168, 85, 247, 0.25)";
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.5)";
+    ctx.lineWidth = 2.5;
 
-        ctx.restore();
-      });
+    const iconPath = createIconPath(obj.icon, obj.size);
+    ctx.fill(iconPath);
+    ctx.stroke(iconPath);
 
-      animationFrameRef.current = requestAnimationFrame(animate);
-    };
+    ctx.restore();
+  });
+
+  animationFrameRef.current = requestAnimationFrame(animate);
+};
+
 
     animate();
 
