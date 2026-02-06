@@ -23,7 +23,7 @@ const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
 
   // ✅ ВСТАВТЕ ВАШ GOOGLE SCRIPT URL ТУТ:
   const GOOGLE_SCRIPT_URL =
-    "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+    "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbzVIp9HoUqL_Z1s3_J70BVqB4ieAQI81gFR_ql3UArRH5IrvEbLUlaVpBGZSgAB3kPc/exec";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
