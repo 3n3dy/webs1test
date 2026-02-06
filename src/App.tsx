@@ -161,18 +161,56 @@ const HeroSection = memo(() => {
           ctx.stroke();
         }
       } else if (icon === Folder) {
-        // Папка з тінню
-        ctx.fillRect(-size * 0.45, -size * 0.15, size * 0.9, size * 0.55);
-        ctx.strokeRect(-size * 0.45, -size * 0.15, size * 0.9, size * 0.55);
+        // Сучасна 3D папка
 
-        // Вкладка
+        // Тіло папки (нижня частина)
+        ctx.fillStyle = "rgba(168, 85, 247, 0.25)";
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.6)";
+        ctx.lineWidth = 2.5;
+
         ctx.beginPath();
-        ctx.moveTo(-size * 0.45, -size * 0.35);
-        ctx.lineTo(-size * 0.1, -size * 0.35);
-        ctx.lineTo(-size * 0.05, -size * 0.15);
-        ctx.lineTo(-size * 0.45, -size * 0.15);
+        ctx.moveTo(-size * 0.45, -size * 0.1);
+        ctx.lineTo(-size * 0.45, size * 0.35);
+        ctx.quadraticCurveTo(-size * 0.45, size * 0.4, -size * 0.4, size * 0.4);
+        ctx.lineTo(size * 0.4, size * 0.4);
+        ctx.quadraticCurveTo(size * 0.45, size * 0.4, size * 0.45, size * 0.35);
+        ctx.lineTo(size * 0.45, -size * 0.1);
         ctx.closePath();
         ctx.fill();
+        ctx.stroke();
+
+        // Вкладка зверху (закруглена)
+        ctx.fillStyle = "rgba(168, 85, 247, 0.35)";
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.45, -size * 0.1);
+        ctx.lineTo(-size * 0.45, -size * 0.25);
+        ctx.quadraticCurveTo(
+          -size * 0.45,
+          -size * 0.3,
+          -size * 0.4,
+          -size * 0.3,
+        );
+        ctx.lineTo(-size * 0.05, -size * 0.3);
+        ctx.quadraticCurveTo(0, -size * 0.3, 0.03 * size, -size * 0.25);
+        ctx.lineTo(0.1 * size, -size * 0.1);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Тінь на папці (для об'єму)
+        ctx.fillStyle = "rgba(168, 85, 247, 0.15)";
+        ctx.beginPath();
+        ctx.rect(-size * 0.4, 0, size * 0.8, size * 0.35);
+        ctx.fill();
+
+        // Деталі (горизонтальні лінії для текстури)
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.3)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.4, size * 0.1);
+        ctx.lineTo(size * 0.4, size * 0.1);
+        ctx.moveTo(-size * 0.4, size * 0.2);
+        ctx.lineTo(size * 0.4, size * 0.2);
         ctx.stroke();
       } else if (icon === Laptop) {
         // Ноутбук з екраном
@@ -195,30 +233,266 @@ const HeroSection = memo(() => {
         // Трекпад
         ctx.strokeRect(-size * 0.15, size * 0.17, size * 0.3, size * 0.06);
       } else if (icon === Brain) {
-        // Мозок з півкулями
+        // Мозок з ефектом горіха/пухнастої хмари
+        ctx.fillStyle = "rgba(168, 85, 247, 0.2)";
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.6)";
+        ctx.lineWidth = 2.5;
+
+        // Ліва півкуля - нерівний контур з "бульбашками"
         ctx.beginPath();
-        ctx.arc(-size * 0.15, -size * 0.05, size * 0.28, 0, Math.PI * 2);
+        ctx.moveTo(-size * 0.05, -size * 0.35);
+
+        // Верхня частина лівої півкулі (звивиста)
+        ctx.bezierCurveTo(
+          -size * 0.15,
+          -size * 0.4,
+          -size * 0.28,
+          -size * 0.38,
+          -size * 0.35,
+          -size * 0.3,
+        );
+        ctx.bezierCurveTo(
+          -size * 0.42,
+          -size * 0.22,
+          -size * 0.45,
+          -size * 0.1,
+          -size * 0.42,
+          0,
+        );
+
+        // Нижня частина лівої півкулі
+        ctx.bezierCurveTo(
+          -size * 0.44,
+          size * 0.12,
+          -size * 0.38,
+          size * 0.25,
+          -size * 0.28,
+          size * 0.32,
+        );
+        ctx.bezierCurveTo(
+          -size * 0.18,
+          size * 0.38,
+          -size * 0.1,
+          size * 0.38,
+          -size * 0.05,
+          size * 0.35,
+        );
+
+        // Центральна частина (з'єднання)
+        ctx.lineTo(-size * 0.02, size * 0.35);
         ctx.fill();
         ctx.stroke();
 
+        // Права півкуля - дзеркально
         ctx.beginPath();
-        ctx.arc(size * 0.15, -size * 0.05, size * 0.28, 0, Math.PI * 2);
+        ctx.moveTo(size * 0.05, -size * 0.35);
+
+        ctx.bezierCurveTo(
+          size * 0.15,
+          -size * 0.4,
+          size * 0.28,
+          -size * 0.38,
+          size * 0.35,
+          -size * 0.3,
+        );
+        ctx.bezierCurveTo(
+          size * 0.42,
+          -size * 0.22,
+          size * 0.45,
+          -size * 0.1,
+          size * 0.42,
+          0,
+        );
+
+        ctx.bezierCurveTo(
+          size * 0.44,
+          size * 0.12,
+          size * 0.38,
+          size * 0.25,
+          size * 0.28,
+          size * 0.32,
+        );
+        ctx.bezierCurveTo(
+          size * 0.18,
+          size * 0.38,
+          size * 0.1,
+          size * 0.38,
+          size * 0.05,
+          size * 0.35,
+        );
+
+        ctx.lineTo(size * 0.02, size * 0.35);
         ctx.fill();
         ctx.stroke();
 
-        // Звивини мозку
+        // Центральна щілина (corpus callosum)
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.7)";
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(-size * 0.15, size * 0.1, size * 0.15, 0, Math.PI);
+        ctx.moveTo(0, -size * 0.35);
+        ctx.quadraticCurveTo(-size * 0.03, -size * 0.15, 0, 0);
+        ctx.quadraticCurveTo(size * 0.03, size * 0.15, 0, size * 0.35);
+        ctx.stroke();
+
+        // Звивини - ліва півкуля (глибокі, нерівні)
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.5)";
+        ctx.lineWidth = 1.8;
+
+        // Верхні звивини зліва
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.35, -size * 0.25);
+        ctx.quadraticCurveTo(
+          -size * 0.25,
+          -size * 0.28,
+          -size * 0.15,
+          -size * 0.22,
+        );
+        ctx.quadraticCurveTo(
+          -size * 0.1,
+          -size * 0.19,
+          -size * 0.08,
+          -size * 0.15,
+        );
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.arc(size * 0.15, size * 0.1, size * 0.15, 0, Math.PI);
+        ctx.moveTo(-size * 0.38, -size * 0.12);
+        ctx.quadraticCurveTo(
+          -size * 0.28,
+          -size * 0.08,
+          -size * 0.18,
+          -size * 0.12,
+        );
+        ctx.quadraticCurveTo(
+          -size * 0.12,
+          -size * 0.14,
+          -size * 0.08,
+          -size * 0.08,
+        );
         ctx.stroke();
 
-        // Центральна лінія
+        // Середні звивини зліва
         ctx.beginPath();
-        ctx.moveTo(0, -size * 0.3);
-        ctx.lineTo(0, size * 0.25);
+        ctx.moveTo(-size * 0.4, 0.02);
+        ctx.quadraticCurveTo(-size * 0.3, 0.06, -size * 0.2, 0.02);
+        ctx.quadraticCurveTo(-size * 0.14, 0, -size * 0.08, 0.03);
+        ctx.stroke();
+
+        // Нижні звивини зліва
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.36, size * 0.15);
+        ctx.quadraticCurveTo(
+          -size * 0.26,
+          size * 0.19,
+          -size * 0.16,
+          size * 0.15,
+        );
+        ctx.quadraticCurveTo(
+          -size * 0.11,
+          size * 0.13,
+          -size * 0.08,
+          size * 0.16,
+        );
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.3, size * 0.28);
+        ctx.quadraticCurveTo(
+          -size * 0.22,
+          size * 0.31,
+          -size * 0.14,
+          size * 0.28,
+        );
+        ctx.quadraticCurveTo(
+          -size * 0.1,
+          size * 0.26,
+          -size * 0.08,
+          size * 0.28,
+        );
+        ctx.stroke();
+
+        // Звивини - права півкуля (дзеркально)
+        ctx.beginPath();
+        ctx.moveTo(size * 0.35, -size * 0.25);
+        ctx.quadraticCurveTo(
+          size * 0.25,
+          -size * 0.28,
+          size * 0.15,
+          -size * 0.22,
+        );
+        ctx.quadraticCurveTo(
+          size * 0.1,
+          -size * 0.19,
+          size * 0.08,
+          -size * 0.15,
+        );
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(size * 0.38, -size * 0.12);
+        ctx.quadraticCurveTo(
+          size * 0.28,
+          -size * 0.08,
+          size * 0.18,
+          -size * 0.12,
+        );
+        ctx.quadraticCurveTo(
+          size * 0.12,
+          -size * 0.14,
+          size * 0.08,
+          -size * 0.08,
+        );
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(size * 0.4, 0.02);
+        ctx.quadraticCurveTo(size * 0.3, 0.06, size * 0.2, 0.02);
+        ctx.quadraticCurveTo(size * 0.14, 0, size * 0.08, 0.03);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(size * 0.36, size * 0.15);
+        ctx.quadraticCurveTo(
+          size * 0.26,
+          size * 0.19,
+          size * 0.16,
+          size * 0.15,
+        );
+        ctx.quadraticCurveTo(
+          size * 0.11,
+          size * 0.13,
+          size * 0.08,
+          size * 0.16,
+        );
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(size * 0.3, size * 0.28);
+        ctx.quadraticCurveTo(
+          size * 0.22,
+          size * 0.31,
+          size * 0.14,
+          size * 0.28,
+        );
+        ctx.quadraticCurveTo(size * 0.1, size * 0.26, size * 0.08, size * 0.28);
+        ctx.stroke();
+
+        // Додаткові "бульбашки" для ефекту горіха
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(-size * 0.32, -size * 0.18, size * 0.06, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(-size * 0.35, 0.08, size * 0.05, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(size * 0.32, -size * 0.18, size * 0.06, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(size * 0.35, 0.08, size * 0.05, 0, Math.PI * 2);
         ctx.stroke();
       } else if (icon === Smartphone) {
         // Смартфон
@@ -248,30 +522,92 @@ const HeroSection = memo(() => {
         ctx.arc(0, size * 0.38, size * 0.06, 0, Math.PI * 2);
         ctx.stroke();
       } else if (icon === PenTool) {
-        // Перо/олівець
+        // Олівець з реалістичним виглядом
+
+        // Дерев'яний корпус олівця
+        ctx.fillStyle = "rgba(168, 85, 247, 0.2)";
         ctx.beginPath();
-        ctx.moveTo(0, -size * 0.45);
-        ctx.lineTo(size * 0.08, size * 0.3);
-        ctx.lineTo(size * 0.08, size * 0.45);
-        ctx.lineTo(-size * 0.08, size * 0.45);
-        ctx.lineTo(-size * 0.08, size * 0.3);
+        ctx.moveTo(-size * 0.06, -size * 0.4);
+        ctx.lineTo(-size * 0.08, size * 0.2);
+        ctx.lineTo(size * 0.08, size * 0.2);
+        ctx.lineTo(size * 0.06, -size * 0.4);
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
 
-        // Гумка
-        ctx.fillStyle = "rgba(168, 85, 247, 0.3)";
-        ctx.fillRect(-size * 0.1, -size * 0.45, size * 0.2, size * 0.15);
-        ctx.strokeRect(-size * 0.1, -size * 0.45, size * 0.2, size * 0.15);
+        // Лінії на дерев'яному корпусі (текстура)
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.3)";
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 6; i++) {
+          const y = -size * 0.3 + i * size * 0.08;
+          ctx.beginPath();
+          ctx.moveTo(-size * 0.06, y);
+          ctx.lineTo(size * 0.06, y);
+          ctx.stroke();
+        }
 
-        // Кінчик олівця
-        ctx.fillStyle = "rgba(168, 85, 247, 0.15)";
+        // Металева обойма
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.7)";
+        ctx.fillStyle = "rgba(168, 85, 247, 0.25)";
+        ctx.lineWidth = 2.5;
+        ctx.fillRect(-size * 0.08, size * 0.2, size * 0.16, size * 0.08);
+        ctx.strokeRect(-size * 0.08, size * 0.2, size * 0.16, size * 0.08);
+
+        // Гумка
+        ctx.fillStyle = "rgba(168, 85, 247, 0.35)";
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.6)";
         ctx.beginPath();
-        ctx.moveTo(-size * 0.08, size * 0.3);
-        ctx.lineTo(0, size * 0.5);
-        ctx.lineTo(size * 0.08, size * 0.3);
+        ctx.roundRect(
+          -size * 0.07,
+          size * 0.28,
+          size * 0.14,
+          size * 0.15,
+          size * 0.02,
+        );
+        ctx.fill();
+        ctx.stroke();
+
+        // Горизонтальні лінії на гумці
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.07, size * 0.33);
+        ctx.lineTo(size * 0.07, size * 0.33);
+        ctx.moveTo(-size * 0.07, size * 0.38);
+        ctx.lineTo(size * 0.07, size * 0.38);
+        ctx.stroke();
+
+        // Металевий кінчик (затичка для грифеля)
+        ctx.fillStyle = "rgba(168, 85, 247, 0.3)";
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.7)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.06, -size * 0.4);
+        ctx.lineTo(-size * 0.04, -size * 0.48);
+        ctx.lineTo(size * 0.04, -size * 0.48);
+        ctx.lineTo(size * 0.06, -size * 0.4);
         ctx.closePath();
         ctx.fill();
+        ctx.stroke();
+
+        // Грифель (чорний кінчик)
+        ctx.fillStyle = "rgba(88, 28, 135, 0.8)"; // Темніший фіолетовий
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.9)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.04, -size * 0.48);
+        ctx.lineTo(0, -size * 0.55);
+        ctx.lineTo(size * 0.04, -size * 0.48);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Тонкий кінчик грифеля
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.9)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, -size * 0.55);
+        ctx.lineTo(0, -size * 0.58);
         ctx.stroke();
       } else if (icon === Coffee) {
         // Чашка кави
