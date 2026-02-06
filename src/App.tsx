@@ -1352,6 +1352,17 @@ const ReasonsSection = memo(() => {
                 {reason.subtitle}
               </p>
 
+              {/* ✅ ГАЛОЧКА-ПІДКАЗКА */}
+              <div className="flex justify-center mb-2">
+                <ChevronDown 
+                  className={`w-6 h-6 text-purple-400 transition-all duration-300 ${
+                    activeReason === index 
+                      ? "rotate-180 text-purple-600" 
+                      : "animate-bounce"
+                  }`}
+                />
+              </div>
+
               <div
                 className={`overflow-hidden transition-all duration-500 ${activeReason === index ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"}`}
               >
