@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, memo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -17,6 +17,7 @@ interface MultiStepFormModalProps {
 const MultiStepFormModal = memo(
   ({ isOpen, onClose }: MultiStepFormModalProps) => {
     const [step, setStep] = useState(1);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
@@ -224,11 +225,21 @@ const MultiStepFormModal = memo(
     };
 
     const nextStep = () => {
-      if (step < 8) setStep(step + 1);
+      if (step < 8) {
+        setStep(step + 1);
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = 0;
+        }
+      }
     };
 
     const prevStep = () => {
-      if (step > 1) setStep(step - 1);
+      if (step > 1) {
+        setStep(step - 1);
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = 0;
+        }
+      }
     };
 
     if (!isOpen) return null;
@@ -274,6 +285,10 @@ const MultiStepFormModal = memo(
 
             {/* Form Content */}
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-220px)]">
+              <div
+                ref={scrollContainerRef}
+                className="p-6 overflow-y-auto max-h-calc(90vh-220px)"
+              ></div>
               <AnimatePresence mode="wait">
                 {/* БЛОК 1: Ідентифікація */}
                 {step === 1 && (
