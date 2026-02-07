@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import sitemap from 'vite-plugin-sitemap'
+import { resolve } from 'path'
 
 export default defineConfig({
   base: '/',
@@ -8,12 +9,12 @@ export default defineConfig({
     react(),
     sitemap({
       hostname: 'https://zvychaika.com',
-      dynamicRoutes: ['/'],
+      dynamicRoutes: ['/', '/survey.html'],  // ← додав опитування
       changefreq: 'weekly',
       priority: 1.0,
       lastmod: new Date(),
       readable: true,
-      exclude: ['/404', '/googledf8d5994ec777781'],  // ← виключити обидва
+      exclude: ['/404', '/googledf8d5994ec777781'],
       robots: [
         {
           userAgent: '*',
@@ -42,6 +43,15 @@ export default defineConfig({
     port: 5173,
     watch: {
       usePolling: true,
+    },
+  },
+  // ← ДОДАТИ ЦЕ:
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        survey: resolve(__dirname, 'survey.html'),
+      },
     },
   },
 })
