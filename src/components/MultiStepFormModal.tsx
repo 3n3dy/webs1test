@@ -105,11 +105,11 @@ const MultiStepFormModal = memo(
       idealSystemDescription: "",
       readyForCall: "",
     });
-useEffect(() => {
-  if (scrollContainerRef.current) {
-    scrollContainerRef.current.scrollTop = 0; // ← миттєво на верх
-  }
-}, [step]);
+    useEffect(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = 0;
+      }
+    }, [step]);
 
     // ✅ ВСТАВТЕ ВАШ GOOGLE SCRIPT URL ТУТ:
     const GOOGLE_SCRIPT_URL =
@@ -238,7 +238,6 @@ useEffect(() => {
     const prevStep = () => {
       if (step > 1) {
         setStep(step - 1);
-
       }
     };
 
@@ -283,8 +282,10 @@ useEffect(() => {
               />
             </div>
 
-            {/* Form Content */}
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-220px)]">
+            <div
+              ref={scrollContainerRef}
+              className="p-6 overflow-y-auto max-h-[calc(90vh-220px)]"
+            >
               <AnimatePresence mode="wait">
                 {/* БЛОК 1: Ідентифікація */}
                 {step === 1 && (
