@@ -1,4 +1,3 @@
-
 import "./App.css";
 import React, {
   useState,
@@ -26,7 +25,7 @@ import { ReasonsSection } from "./components/sections/ReasonSection";
 import { ProcessSection } from "./components/sections/ProcessSection";
 import { PersonalCalculationSection } from './components/sections/PersonalCalculationSection';
 import { CTASection } from './components/sections/CTASection';
-import { Footer } from './components/Footer';
+import { Footer } from './components/footer';
 
 import {
   AlertCircle,
@@ -60,10 +59,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import Header from "./components/header";
 import MultiStepFormModal from "./components/MultiStepFormModal";
 import ContactModal from "./components/ContactModal";
+import ProjectInfoModal, { ProjectInfoButton } from "./components/ProjectInfoModal";
 
 // Lazy loading для важких компонентів
 const AboutAuthorModal = lazy(() => import("./components/AboutAuthorModal"));
-const ProjectInfoModal = lazy(() => import("./components/ProjectInfoModal"));
+
 
 // Винесені компоненти для кращої оптимізації
 const HeroSection = memo(() => {
@@ -328,33 +328,39 @@ const HeroSection = memo(() => {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
-          >
-            <Suspense fallback={<div className="h-[72px] w-[200px]" />}>
-              <ProjectInfoModal
-                isOpen={isProjectInfoOpen}
-                onOpenChange={setIsProjectInfoOpen}
-                onOpenContact={() => setIsContactModalOpen(true)}
-              />
-              <ContactModal
-                isOpen={isContactModalOpen}
-                onClose={() => setIsContactModalOpen(false)}
-              />
-            </Suspense>
-          </motion.div>
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8, delay: 0.2 }}
+  className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+>
+  {/* Кнопка "Про проєкт" */}
+  <Suspense fallback={<div className="h-[72px] w-[200px]" />}>
+    <ProjectInfoButton onClick={() => setIsProjectInfoOpen(true)} />
+  </Suspense>
+</motion.div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            <Suspense fallback={<div className="h-[148px]" />}>
-              <AboutAuthorModal />
-            </Suspense>
-          </motion.div>
+{/* Модалки (поза motion.div) */}
+<ProjectInfoModal
+  isOpen={isProjectInfoOpen}
+  onOpenChange={setIsProjectInfoOpen}
+  onOpenContact={() => setIsContactModalOpen(true)}
+/>
+
+<ContactModal
+  isOpen={isContactModalOpen}
+  onClose={() => setIsContactModalOpen(false)}
+/>
+
+<motion.div
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ duration: 0.8, delay: 0.4 }}
+>
+  <Suspense fallback={<div className="h-[148px]" />}>
+    <AboutAuthorModal />
+  </Suspense>
+</motion.div>
+
         </div>
       </div>
 
@@ -976,7 +982,6 @@ const PackagesSection = memo(() => {
 
 PackagesSection.displayName = "PackagesSection";
 
-// ✅ ДОДАЙТЕ ЦЕЙ РЯДОК:
 PersonalCalculationSection.displayName = "PersonalCalculationSection";
 
 ReasonsSection.displayName = "ReasonsSection";
