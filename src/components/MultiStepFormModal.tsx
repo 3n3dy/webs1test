@@ -227,11 +227,11 @@ const MultiStepFormModal = memo(
     const nextStep = () => {
       if (step < 8) {
         setStep(step + 1);
-        useEffect(() => {
-  if (scrollContainerRef.current) {
-    scrollContainerRef.current.scrollTop = 0;
-  }
-}, [step]);
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = 0;
+        }
+      }
+    };
 
     const prevStep = () => {
       if (step > 1) {
