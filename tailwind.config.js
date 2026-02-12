@@ -2,7 +2,9 @@
 export default {
   content: [
     "./index.html",
-    "./webs1test/**/*.{js,ts,jsx,tsx}",
+    "./consultation.html",
+    "./survey.html",
+    "./src/**/*.{js,ts,jsx,tsx}",  // ← виправлено з webs1test!
   ],
   theme: {
     extend: {
@@ -11,32 +13,25 @@ export default {
       },
       animation: {
         'gradient': 'gradient 3s ease infinite',
-        'float': 'float linear infinite',
+        'float': 'float 3s ease-in-out infinite',
+        'slide-up': 'slide-up 0.5s ease-out',
+        'slide-down': 'slide-down 0.5s ease-out',
+        'shake': 'shake 0.5s ease-in-out',
+        'wiggle': 'wiggle 1s ease-in-out infinite',
+        'swing': 'swing 1s ease-in-out infinite',
+        'pulse-scale': 'pulse-scale 2s ease-in-out infinite',
+        'heartbeat': 'heartbeat 1.5s ease-in-out infinite',
+        'rotate-slow': 'rotate-slow 3s linear infinite',
+        'rotate-reverse': 'rotate-reverse 3s linear infinite',
+        'fade-in': 'fade-in 0.5s ease-out',
+        'fade-out': 'fade-out 0.5s ease-out',
+        'glow': 'glow 2s ease-in-out infinite',
       },
       keyframes: {
         gradient: {
           '0%, 100%': { backgroundPosition: '0% 50%' },
           '50%': { backgroundPosition: '100% 50%' },
         },
-        float: {
-          '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
-          '50%': { transform: 'translateY(-20px) rotate(180deg)' },
-        },
-      },
-    },
-  },
-  plugins: [],
-}
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./webs1test/**/*.{js,jsx,ts,tsx}",
-    "./index.html"
-  ],
-  theme: {
-    extend: {
-      keyframes: {
-        // 1. РУХИ
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-15px)' },
@@ -65,8 +60,6 @@ module.exports = {
           '60%': { transform: 'rotate(5deg)' },
           '80%': { transform: 'rotate(-5deg)' },
         },
-
-        // 2. МАСШТАБ
         'pulse-scale': {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.1)' },
@@ -77,8 +70,6 @@ module.exports = {
           '50%': { transform: 'scale(1)' },
           '75%': { transform: 'scale(1.15)' },
         },
-
-        // 3. ОБЕРТАННЯ
         'rotate-slow': {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(360deg)' },
@@ -87,8 +78,6 @@ module.exports = {
           '0%': { transform: 'rotate(360deg)' },
           '100%': { transform: 'rotate(0deg)' },
         },
-
-        // 4. ПРОЗОРІСТЬ (ДОДАВ!)
         'fade-in': {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
@@ -97,37 +86,11 @@ module.exports = {
           '0%': { opacity: '1' },
           '100%': { opacity: '0' },
         },
-
-        // 5. КОМБІНОВАНІ
         glow: {
           '0%, 100%': { filter: 'drop-shadow(0 0 2px currentColor)' },
           '50%': { filter: 'drop-shadow(0 0 10px currentColor)' },
         },
       },
-      animation: {
-        // РУХИ
-        float: 'float 3s ease-in-out infinite',
-        'slide-up': 'slide-up 0.5s ease-out',
-        'slide-down': 'slide-down 0.5s ease-out',
-        shake: 'shake 0.5s ease-in-out',
-        wiggle: 'wiggle 1s ease-in-out infinite',
-        swing: 'swing 1s ease-in-out infinite',
-
-        // МАСШТАБ
-        'pulse-scale': 'pulse-scale 2s ease-in-out infinite',
-        heartbeat: 'heartbeat 1.5s ease-in-out infinite',
-
-        // ОБЕРТАННЯ
-        'rotate-slow': 'rotate-slow 3s linear infinite',
-        'rotate-reverse': 'rotate-reverse 3s linear infinite',
-
-        // ПРОЗОРІСТЬ (ДОДАВ!)
-        'fade-in': 'fade-in 0.5s ease-out',
-        'fade-out': 'fade-out 0.5s ease-out',
-
-        // КОМБІНОВАНІ
-        glow: 'glow 2s ease-in-out infinite',
-      }
     },
   },
   plugins: [],

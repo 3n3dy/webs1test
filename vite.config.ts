@@ -1,47 +1,57 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import sitemap from 'vite-plugin-sitemap'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import sitemap from "vite-plugin-sitemap";
+import path from "path";
 
 export default defineConfig({
-  base: '/',
+  base: "/",
   plugins: [
     react(),
     sitemap({
-      hostname: 'https://zvychaika.com',
-      dynamicRoutes: ['/'],
-      changefreq: 'weekly',
+      hostname: "https://zvychaika.com",
+      dynamicRoutes: ["/", "/consultation.html", "/survey.html"],
+      changefreq: "weekly",
       priority: 1.0,
       lastmod: new Date(),
       readable: true,
-      exclude: ['/404', '/googledf8d5994ec777781'],  // ← виключити обидва
+      exclude: ["/404", "/googledf8d5994ec777781"], // ← виключити обидва
       robots: [
         {
-          userAgent: '*',
-          allow: '/',
+          userAgent: "*",
+          allow: "/",
         },
         {
-          userAgent: 'GPTBot',
-          disallow: '/',
+          userAgent: "GPTBot",
+          disallow: "/",
         },
         {
-          userAgent: 'ChatGPT-User',
-          disallow: '/',
+          userAgent: "ChatGPT-User",
+          disallow: "/",
         },
         {
-          userAgent: 'CCBot',
-          disallow: '/',
+          userAgent: "CCBot",
+          disallow: "/",
         },
       ],
     }),
   ],
   css: {
-    postcss: './postcss.config.js',
+    postcss: "./postcss.config.js",
   },
   server: {
-    host: '0.0.0.0',
+    host: "0.0.0.0",
     port: 5173,
     watch: {
       usePolling: true,
     },
   },
-})
+   build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        consultation: path.resolve(__dirname, 'consultation.html'),
+        survey: path.resolve(__dirname, 'survey.html'),
+      },
+    },
+  },
+});
