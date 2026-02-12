@@ -1,4 +1,4 @@
-import { useState, memo, useRef } from "react";
+import { useState, memo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -105,6 +105,11 @@ const MultiStepFormModal = memo(
       idealSystemDescription: "",
       readyForCall: "",
     });
+    useEffect(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = 0;
+      }
+    }, [step]);
 
     // ✅ ВСТАВТЕ ВАШ GOOGLE SCRIPT URL ТУТ:
     const GOOGLE_SCRIPT_URL =
@@ -227,18 +232,12 @@ const MultiStepFormModal = memo(
     const nextStep = () => {
       if (step < 8) {
         setStep(step + 1);
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollTop = 0;
-        }
       }
     };
 
     const prevStep = () => {
       if (step > 1) {
         setStep(step - 1);
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollTop = 0;
-        }
       }
     };
 
@@ -285,10 +284,6 @@ const MultiStepFormModal = memo(
 
             {/* Form Content */}
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-220px)]">
-              <div
-                ref={scrollContainerRef}
-                className="p-6 overflow-y-auto max-h-calc(90vh-220px)"
-              ></div>
               <AnimatePresence mode="wait">
                 {/* БЛОК 1: Ідентифікація */}
                 {step === 1 && (
