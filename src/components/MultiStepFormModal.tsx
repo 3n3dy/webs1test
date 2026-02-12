@@ -106,10 +106,14 @@ const MultiStepFormModal = memo(
       readyForCall: "",
     });
     useEffect(() => {
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop = 0;
-      }
-    }, [step]);
+  // При зміні кроку - прокрутити контент на початок
+  if (scrollContainerRef.current) {
+    scrollContainerRef.current.scrollTop({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+}, [step]);
 
     // ✅ ВСТАВТЕ ВАШ GOOGLE SCRIPT URL ТУТ:
     const GOOGLE_SCRIPT_URL =
@@ -238,6 +242,7 @@ const MultiStepFormModal = memo(
     const prevStep = () => {
       if (step > 1) {
         setStep(step - 1);
+
       }
     };
 
