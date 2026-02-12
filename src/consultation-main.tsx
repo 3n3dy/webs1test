@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './App.css'
+import './index.css'
 import ContactModal from './components/ContactModal'
 
 const ConsultationPage = () => {
