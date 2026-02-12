@@ -9,13 +9,16 @@ const SurveyPage = () => {
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center p-4">
+    <>
+      {/* Просто фон */}
       <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 -z-10" />
+      
+      {/* Модалка БЕЗ обгортки */}
       <MultiStepFormModal 
         isOpen={true} 
         onClose={handleClose}
       />
-    </div>
+    </>
   )
 }
 
