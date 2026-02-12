@@ -105,13 +105,9 @@ const MultiStepFormModal = memo(
       idealSystemDescription: "",
       readyForCall: "",
     });
-    useEffect(() => {
-  // При зміні кроку - прокрутити контент на початок
+useEffect(() => {
   if (scrollContainerRef.current) {
-    scrollContainerRef.current.scrollTop({
-      top: 0,
-      behavior: 'smooth'
-    });
+    scrollContainerRef.current.scrollTop = 0; // ← миттєво на верх
   }
 }, [step]);
 
