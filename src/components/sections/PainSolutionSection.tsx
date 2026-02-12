@@ -16,7 +16,7 @@ export const PainSolutionSection = memo(() => {
           className="text-center mb-16"
         >
           <h2 className="text-5xl font-semibold text-gray-900 mb-6">
-            Наш підхід — для виправлення цих помилок:
+            Ваш час - для стратегій
           </h2>
           <div className="flex items-center max-w-3xl mx-auto my-8">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-400 to-transparent"></div>
@@ -24,7 +24,7 @@ export const PainSolutionSection = memo(() => {
             <div className="flex-1 h-px bg-gradient-to-l from-transparent via-purple-400 to-transparent"></div>
           </div>
           <p className="text-xl font-semibold text-gray-600 max-w-3xl mx-auto">
-            Від хаосу до структурованого навчання.
+            Наш - для виправлення ци помилок:
           </p>
         </motion.div>
 
