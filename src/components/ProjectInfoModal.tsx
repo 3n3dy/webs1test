@@ -10,7 +10,6 @@ import {
   Workflow,
   CloudUpload,
   Fingerprint,
-  HeartMinus,
 } from "lucide-react";
 import { AnimatedIcon } from "./AnimatedIcon";
 import { useState } from "react";
@@ -98,6 +97,7 @@ function ProjectInfoModal({
             className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Header */}
             <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 md:p-6 rounded-t-3xl flex items-center justify-between z-20 shadow-2xl">
               <Dialog.Title className="text-base md:text-xl font-semibold flex items-center gap-3">
                 <Zap className="w-6 h-6 md:w-8 md:h-8" />
@@ -116,6 +116,7 @@ function ProjectInfoModal({
               Детальна інформація про проєкт управління знаннями
             </Dialog.Description>
 
+            {/* Content */}
             <div className="p-4 md:p-8 space-y-6 text-gray-700 leading-relaxed">
               <section>
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
@@ -131,7 +132,9 @@ function ProjectInfoModal({
                   власника для фокусу на стратегії й масштабуванні, забезпечуючи
                   стабільну роботу бізнесу.
                 </p>
-                <div className="p-4 md:p-2 space-y-6 text-gray-700 leading-relaxed"></div>
+              </section>
+
+              <section>
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
                   👩‍💻 Як це працює:
                 </h3>
@@ -154,34 +157,33 @@ function ProjectInfoModal({
                   оргсхеми та «Книги Новачка» для швидкої адаптації.
                 </p>
               </section>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                {/* Перша секція */}
-                <section>
-                  <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
-                    💡 Чому це важливо?
-                  </h3>
-                  <ul className="space-y-2">
-                    {[
-                      {
-                        text: "20-30% робочого часу витрачається на пошук інформації",
-                      },
-                      {
-                        text: "Втрата знань при звільненні співробітників коштує $2,500-$5,000 на одного",
-                      },
-                      {
-                        text: "Компанії з knowledge base продуктивніші на 30%",
-                      },
-                    ].map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm md:text-base whitespace-nowrap">
-                          {item.text}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              </div>
+
+              {/* ✅ ВИПРАВЛЕНА СЕКЦІЯ */}
+              <section>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
+                  💡 Чому це важливо?
+                </h3>
+                <ul className="space-y-2">
+                  {[
+                    {
+                      text: "20-30% робочого часу витрачається на пошук інформації",
+                    },
+                    {
+                      text: "Втрата знань при звільненні співробітників коштує $2,500-$5,000 на одного",
+                    },
+                    {
+                      text: "Компанії з knowledge base продуктивніші на 30%",
+                    },
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base break-words">
+                        {item.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
 
               <section>
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-6">
@@ -257,27 +259,28 @@ function ProjectInfoModal({
               </section>
             </div>
 
+            {/* Footer */}
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 md:p-6 rounded-b-3xl text-center border-t border-purple-200">
               <p className="text-sm md:text-base text-gray-700 mb-4">
                 Готові створити свою базу знань?
               </p>
               <Dialog.Close asChild>
                 <div className="flex flex-col items-center gap-3">
-                 <button
-  onClick={() => {
-    onOpenContact(); // ✅ Відкриваємо ContactModal
-    onOpenChange(false); // ✅ Закриваємо ProjectInfoModal
-  }}
-  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 md:px-40 py-2 md:py-1 rounded-2xl font-semibold hover:shadow-xl transition-all hover:scale-105 text-sm md:text-base"
->
-  Замовити консультацію
-</button>
+                  <button
+                    onClick={() => {
+                      onOpenContact();
+                      onOpenChange(false);
+                    }}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 md:px-40 py-2 md:py-3 rounded-2xl font-semibold hover:shadow-xl transition-all hover:scale-105 text-sm md:text-base"
+                  >
+                    Замовити консультацію
+                  </button>
 
-               <div className="flex items-center gap-3 text-sm text-gray-500">
-    <div className="h-px bg-gray-300 w-8"></div>
-    <span>або</span>
-    <div className="h-px bg-gray-300 w-8"></div>
-  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                    <div className="h-px bg-gray-300 w-8"></div>
+                    <span>або</span>
+                    <div className="h-px bg-gray-300 w-8"></div>
+                  </div>
 
                   <div className="flex items-center justify-center gap-3">
                     <a
