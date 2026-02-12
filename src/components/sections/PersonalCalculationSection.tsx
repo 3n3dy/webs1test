@@ -20,7 +20,7 @@ export const PersonalCalculationSection = memo(() => {
           >
             <div className="text-center">
               <div className="text-3xl font-semibold mb-3">
-                Замовити безкоштовний прорахуно
+                Замовити безкоштовний прорахунок
               </div>
               <div className="text-base font-normal opacity-90">
                 Натисніть, щоб заповнити форму та дізнайтесь приблизну вартість та терміни
