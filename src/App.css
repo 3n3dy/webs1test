@@ -84,41 +84,46 @@
   }
 
   /* === 3D FLIP ANIMATION === */
-  .flip-card-container {
-    perspective: 2000px;
-    overflow: visible;
-  }
-  
-  .flip-card-inner {
-    position: relative;
-    width: 100%;
-    min-height: 500px;
-    transform-style: preserve-3d;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: visible;
-  }
-  
-  .flip-card-inner.flipped {
-    transform: rotateY(180deg);
-  }
-  
-  .flip-card-front,
-  .flip-card-back {
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-     -moz-backface-visibility: hidden;
-      position: absolute;
-    overflow: visible;
-  }
-  .flip-card-front {
-  transform: rotateY(0deg); /* ✅ ДОДАЙ явно */
-  z-index: 2; /* ✅ ДОДАЙ щоб була зверху */
+.flip-card-container {
+  perspective: 2000px;
+  overflow: visible;
+  min-height: 500px; /* ✅ ДОДАЙ щоб тримати висоту */
 }
 
-  .flip-card-back {
-    transform: rotateY(180deg);
-    z-index: 1;
-  }
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 500px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flip-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  width: 100%;
+}
+
+.flip-card-front {
+  transform: rotateY(0deg);
+  /* ❌ НЕ ДОДАВАЙ position: absolute */
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+  position: absolute; /* ✅ ТІЛЬКИ тут */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
   
   /* === HOVER LIFT === */
   .hover-lift {
