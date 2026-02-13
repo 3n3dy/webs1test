@@ -21,7 +21,6 @@ const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
     comment: "",
   });
 
-  // ✅ ВСТАВТЕ ВАШ GOOGLE SCRIPT URL ТУТ:
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbzVIp9HoUqL_Z1s3_J70BVqB4ieAQI81gFR_ql3UArRH5IrvEbLUlaVpBGZSgAB3kPc/exec";
 

@@ -1,6 +1,6 @@
-import { memo } from 'react';
-import { motion } from 'framer-motion';
-import { Mail, Zap, CheckCircle, Users } from 'lucide-react';
+import { memo } from "react";
+import { motion } from "framer-motion";
+import { Mail, Zap, CheckCircle, Users } from "lucide-react";
 
 export const CTASection = memo(() => {
   return (
@@ -15,7 +15,8 @@ export const CTASection = memo(() => {
             Готові навести лад у знаннях?
           </h2>
           <p className="text-xl md:text-2xl text-purple-100 mb-10 max-w-2xl mx-auto">
-            Замовте безкоштовну консультацію — ми проаналізуємо вашу ситуацію та запропонуємо рішення
+            Замовте безкоштовну консультацію — ми проаналізуємо вашу ситуацію та
+            запропонуємо рішення
           </p>
         </motion.div>
       </div>
@@ -36,64 +37,83 @@ export const CTASection = memo(() => {
             Контакти
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            {/* Phone */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all duration-300 hover:bg-white/15">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <a
-                  href="tel:+380950571649"
-                  className="hover:scale-110 transition-transform"
-                  title="Телефон"
-                >
-                  <img
-                    alt="Phone"
-                    className="w-7 h-7"
-                    src="https://img.icons8.com/ios-filled/50/ffffff/phone.png"
-                  />
-                </a>
-                <a
-                  href="https://t.me/bonnie_benay"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:scale-110 transition-transform"
-                  title="Telegram"
-                >
-                  <img
-                    alt="Telegram"
-                    className="w-8 h-8"
-                    src="https://img.icons8.com/color/48/telegram-app.png"
-                  />
-                </a>
-                <a
-                  href="viber://chat?number=%2B380950571649"
-                  className="hover:scale-110 transition-transform"
-                  title="Viber"
-                >
-                  <img
-                    alt="Viber"
-                    className="w-8 h-8"
-                    src="https://img.icons8.com/color/48/viber.png"
-                  />
-                </a>
-              </div>
-
-              <div className="hidden sm:block w-px h-8 bg-white/20 mx-1"></div>
-
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {/* Social Media */}
+            <div className="flex items-center justify-center gap-3 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all duration-300 hover:bg-white/15">
               <a
-                href="tel:+380950571649"
-                className="text-base sm:text-lg text-purple-100 hover:text-white transition-all duration-300 font-medium hover:scale-105"
+                href="https://t.me/bonnie_benay"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-110 transition-transform"
+                title="Telegram"
               >
-                +380 95 057 16 49
+                <img
+                  alt="Telegram"
+                  className="w-8 h-8"
+                  src="https://img.icons8.com/color/48/telegram-app.png"
+                />
+              </a>
+              <a
+                href="viber://chat?number=%2B380950571649"
+                className="hover:scale-110 transition-transform"
+                title="Viber"
+              >
+                <img
+                  alt="Viber"
+                  className="w-8 h-8"
+                  src="https://img.icons8.com/color/48/viber.png"
+                />
+              </a>
+              <a
+                href="https://www.facebook.com/profile.php?id=61587463958698"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-110 transition-transform"
+                title="Facebook"
+              >
+                <img
+                  alt="Facebook"
+                  className="w-8 h-8"
+                  src="https://img.icons8.com/color/48/facebook-new.png"
+                />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/zvychaika"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-110 transition-transform"
+                title="LinkedIn"
+              >
+                <img
+                  alt="LinkedIn"
+                  className="w-8 h-8"
+                  src="https://img.icons8.com/color/48/linkedin.png"
+                />
               </a>
             </div>
+
+            {/* Phone */}
+            <a
+              href="tel:+380950571649"
+              className="flex items-center justify-center gap-3 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all duration-300 hover:bg-white/15"
+            >
+              <img
+                alt="Phone"
+                className="w-7 h-7"
+                src="https://img.icons8.com/ios-filled/50/ffffff/phone.png"
+              />
+              <span className="text-base sm:text-lg text-purple-100 hover:text-white transition-all duration-300 font-medium">
+                +380 95 057 16 49
+              </span>
+            </a>
 
             {/* Email */}
             <a
               href="mailto:hanna.ws.g@gmail.com?subject=Консультація%20щодо%20структуризації&body=Привіт%2C%20Ганно%2C%0A%0A"
-              className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 bg-white/10 backdrop-blur-md rounded-2xl p-4 hover:bg-white/20 transition-all duration-300 border border-white/20"
+              className="flex items-center justify-center gap-3 bg-white/10 backdrop-blur-md rounded-2xl p-4 hover:bg-white/20 transition-all duration-300 border border-white/20"
             >
               <Mail className="w-8 h-8 text-purple-300 flex-shrink-0" />
-              <span className="text-base sm:text-lg text-purple-100 break-all">
+              <span className="text-base sm:text-lg text-purple-100">
                 hanna.ws.g@gmail.com
               </span>
             </a>
@@ -117,28 +137,30 @@ export const CTASection = memo(() => {
             {[
               {
                 icon: <Zap className="w-8 h-8" />,
-                title: 'Швидко',
-                desc: 'На 80% швидша адаптація'
+                title: "Швидко",
+                desc: "На 80% швидша адаптація",
               },
               {
                 icon: <CheckCircle className="w-8 h-8" />,
-                title: 'Впевнено',
-                desc: '10.000+ опрацьованих документів'
+                title: "Впевнено",
+                desc: "10.000+ опрацьованих документів",
               },
               {
                 icon: <Users className="w-8 h-8" />,
-                title: 'З підтримкою',
-                desc: 'Не залишимо наодинці'
-              }
+                title: "З підтримкою",
+                desc: "Не залишимо наодинці",
+              },
             ].map((item, index) => (
               <div
                 key={index}
-                className={`flex flex-col md:flex-row items-center md:items-start gap-4 text-center md:text-left ${index === 2 ? 'md:ml-8' : ''}`}
+                className={`flex flex-col md:flex-row items-center md:items-start gap-4 text-center md:text-left ${index === 2 ? "md:ml-8" : ""}`}
               >
                 <div className="text-purple-300 flex-shrink-0">{item.icon}</div>
                 <div className="min-w-0">
                   <h4 className="font-semibold mb-1">{item.title}</h4>
-                  <p className="text-purple-200 text-sm whitespace-nowrap">{item.desc}</p>
+                  <p className="text-purple-200 text-sm whitespace-nowrap">
+                    {item.desc}
+                  </p>
                 </div>
               </div>
             ))}
@@ -149,4 +171,4 @@ export const CTASection = memo(() => {
   );
 });
 
-CTASection.displayName = 'CTASection';
+CTASection.displayName = "CTASection";
