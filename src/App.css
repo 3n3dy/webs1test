@@ -107,11 +107,17 @@
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
      -moz-backface-visibility: hidden;
+      position: absolute;
     overflow: visible;
   }
-  
+  .flip-card-front {
+  transform: rotateY(0deg); /* ✅ ДОДАЙ явно */
+  z-index: 2; /* ✅ ДОДАЙ щоб була зверху */
+}
+
   .flip-card-back {
     transform: rotateY(180deg);
+    z-index: 1;
   }
   
   /* === HOVER LIFT === */
