@@ -1,3 +1,5 @@
+import { memo } from 'react';
+import * as Dialog from '@radix-ui/react-dialog';
 import {
   X,
   Zap,
@@ -14,16 +16,10 @@ import { AnimatedIcon } from "./AnimatedIcon";
 import { useState } from "react";
 
 interface ProjectInfoModalProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
   onOpenContact: () => void;
 }
 
-function ProjectInfoModal({
-  isOpen,
-  onOpenChange,
-  onOpenContact,
-}: ProjectInfoModalProps) {
+const ProjectInfoModal = memo(({ onOpenContact }: ProjectInfoModalProps) => {
   const [activeCard, setActiveCard] = useState<number | null>(null);
 
   const cards = [
@@ -77,249 +73,251 @@ function ProjectInfoModal({
     },
   ];
 
-  if (!isOpen) return null;
-
   return (
-    <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={() => onOpenChange(false)}
-    >
-      <div
-        className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 md:p-6 rounded-t-3xl flex items-center justify-between z-20 shadow-2xl">
-          <h2 className="text-base md:text-xl font-semibold flex items-center gap-3">
-            <Zap className="w-6 h-6 md:w-8 md:h-8" />
-            <span className="hidden sm:inline">
-              «ЗВИЧАЇКА» — корпоративна екосистема управління знаннями
-            </span>
-            <span className="sm:hidden">«ЗВИЧАЇКА»</span>
-          </h2>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="hover:bg-white/20 rounded-full p-2 transition-all"
+    <Dialog.Root>
+      {/* Trigger */}
+      <Dialog.Trigger asChild>
+        <button className="button-shimmer group relative px-8 py-4 bg-white text-purple-600 backdrop-blur-md rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-purple-200">
+          <span className="flex items-center gap-3 relative z-10">
+            <BookOpen className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+            Про проєкт
+          </span>
+        </button>
+      </Dialog.Trigger>
+
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" />
+
+        <Dialog.Content className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
           >
-            <X size={24} className="md:hidden" />
-            <X size={28} className="hidden md:block" />
-          </button>
-        </div>
+            {/* Header */}
+            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 md:p-6 rounded-t-3xl flex items-center justify-between z-10">
+              <Dialog.Title className="text-base md:text-xl font-semibold flex items-center gap-3">
+                <Zap className="w-6 h-6 md:w-8 md:h-8" />
+                <span className="hidden sm:inline">
+                  «ЗВИЧАЇКА» — корпоративна екосистема управління знаннями
+                </span>
+                <span className="sm:hidden">«ЗВИЧАЇКА»</span>
+              </Dialog.Title>
+              <Dialog.Close asChild>
+                <button className="hover:bg-white/20 rounded-full p-2 transition-all outline-none">
+                  <X size={24} className="md:hidden" />
+                  <X size={28} className="hidden md:block" />
+                </button>
+              </Dialog.Close>
+            </div>
 
-        {/* Content */}
-        <div className="p-4 md:p-8 space-y-6 text-gray-700 leading-relaxed">
-          <section>
-            <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
-              💁🏼‍♀️ Про проєкт:
-            </h3>
-            <p className="text-sm md:text-base">
-              <b className="text-purple-600">Звичаїка</b> — системне рішення
-              для малого та середнього бізнесу, що формує інфраструктуру
-              знань і процесів та піднімає ефективність на новий рівень.
-              Проєкт поєднує <b className="text-purple-600">ЗВИЧАЇ</b> —
-              глибоке дослідження та розуміння внутрішніх процесів компанії
-              — та <b className="text-purple-600">ЧАЙ</b> - звільняє час
-              власника для фокусу на стратегії й масштабуванні, забезпечуючи
-              стабільну роботу бізнесу.
-            </p>
-          </section>
+            <Dialog.Description className="sr-only">
+              Інформація про проєкт ЗВИЧАЇКА - корпоративну екосистему управління знаннями
+            </Dialog.Description>
 
-          <section>
-            <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
-              👩‍💻 Як це працює:
-            </h3>
-            <p className="text-sm md:text-base">
-              Ми не ламаємо, а впорядковуємо: досліджуємо, як ваш бізнес уже
-              функціонує, і трансформуємо це у зрозумілі алгоритми,
-              перетворюємо розрізнені файли та знання співробітників на
-              єдину цифрову систему.
-            </p>
-            <p className="mt-2 text-sm md:text-base">
-              Це системне рішення, яке перетворює розрізнені файли та досвід
-              у головах працівників на структурований цифровий актив
-              компанії.
-            </p>
-            <p className="mt-3 text-sm md:text-base">
-              Проєкт забезпечує перехід від ручного управління до автономної
-              системи. Ми впроваджуємо комплексну інфраструктуру:
-              Wiki-центри для знань, LMS-платформи для навчання,
-              таск-менеджери для контролю за процесами, а також чіткі
-              оргсхеми та «Книги Новачка» для швидкої адаптації.
-            </p>
-          </section>
+            {/* Content */}
+            <div className="p-4 md:p-8 space-y-6 text-gray-700 leading-relaxed">
+              <section>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
+                  💁🏼‍♀️ Про проєкт:
+                </h3>
+                <p className="text-sm md:text-base">
+                  <b className="text-purple-600">Звичаїка</b> — системне рішення
+                  для малого та середнього бізнесу, що формує інфраструктуру
+                  знань і процесів та піднімає ефективність на новий рівень.
+                  Проєкт поєднує <b className="text-purple-600">ЗВИЧАЇ</b> —
+                  глибоке дослідження та розуміння внутрішніх процесів компанії
+                  — та <b className="text-purple-600">ЧАЙ</b> - звільняє час
+                  власника для фокусу на стратегії й масштабуванні, забезпечуючи
+                  стабільну роботу бізнесу.
+                </p>
+              </section>
 
-          <section>
-            <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
-              💡 Чому це важливо?
-            </h3>
-            <ul className="space-y-2">
-              {[
-                {
-                  text: "20-30% робочого часу витрачається на пошук інформації",
-                },
-                {
-                  text: "Втрата знань при звільненні співробітників коштує $2,500-$5,000 на одного",
-                },
-                {
-                  text: "Компанії з knowledge base продуктивніші на 30%",
-                },
-              ].map((item, idx) => (
-                <li key={idx} className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm md:text-base break-words">
-                    {item.text}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
+              <section>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
+                  👩‍💻 Як це працює:
+                </h3>
+                <p className="text-sm md:text-base">
+                  Ми не ламаємо, а впорядковуємо: досліджуємо, як ваш бізнес уже
+                  функціонує, і трансформуємо це у зрозумілі алгоритми,
+                  перетворюємо розрізнені файли та знання співробітників на
+                  єдину цифрову систему.
+                </p>
+                <p className="mt-2 text-sm md:text-base">
+                  Це системне рішення, яке перетворює розрізнені файли та досвід
+                  у головах працівників на структурований цифровий актив
+                  компанії.
+                </p>
+                <p className="mt-3 text-sm md:text-base">
+                  Проєкт забезпечує перехід від ручного управління до автономної
+                  системи. Ми впроваджуємо комплексну інфраструктуру:
+                  Wiki-центри для знань, LMS-платформи для навчання,
+                  таск-менеджери для контролю за процесами, а також чіткі
+                  оргсхеми та «Книги Новачка» для швидкої адаптації.
+                </p>
+              </section>
 
-          <section>
-            <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-6">
-              🚀 Що ми пропонуємо?
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
-              {cards.map((item, idx) => {
-                const isActive = activeCard === idx;
+              <section>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
+                  💡 Чому це важливо?
+                </h3>
+                <ul className="space-y-2">
+                  {[
+                    {
+                      text: "20-30% робочого часу витрачається на пошук інформації",
+                    },
+                    {
+                      text: "Втрата знань при звільненні співробітників коштує $2,500-$5,000 на одного",
+                    },
+                    {
+                      text: "Компанії з knowledge base продуктивніші на 30%",
+                    },
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base break-words">
+                        {item.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
 
-                return (
-                  <div
-                    key={idx}
-                    onMouseEnter={() => setActiveCard(idx)}
-                    onMouseLeave={() => setActiveCard(null)}
-                    onClick={() =>
-                      setActiveCard(activeCard === idx ? null : idx)
-                    }
-                    className={`relative bg-white rounded-xl border transition-all duration-300 overflow-hidden cursor-pointer min-h-[120px] ${
-                      isActive
-                        ? "border-transparent shadow-2xl"
-                        : "border-gray-200 hover:shadow-lg"
-                    }`}
-                  >
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-br ${item.gradient} transition-opacity duration-500 ${
-                        isActive ? "opacity-100" : "opacity-0"
-                      }`}
-                    />
+              <section>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-6">
+                  🚀 Що ми пропонуємо?
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+                  {cards.map((item, idx) => {
+                    const isActive = activeCard === idx;
 
-                    <div className="relative z-10 p-4 md:p-6">
-                      <div className="flex justify-center mb-3">
+                    return (
+                      <div
+                        key={idx}
+                        onMouseEnter={() => setActiveCard(idx)}
+                        onMouseLeave={() => setActiveCard(null)}
+                        onClick={() =>
+                          setActiveCard(activeCard === idx ? null : idx)
+                        }
+                        className={`relative bg-white rounded-xl border transition-all duration-300 overflow-hidden cursor-pointer min-h-[120px] ${
+                          isActive
+                            ? "border-transparent shadow-2xl"
+                            : "border-gray-200 hover:shadow-lg"
+                        }`}
+                      >
                         <div
-                          className={`transition-all duration-300 ${
-                            isActive
-                              ? "text-white scale-110"
-                              : "text-purple-600"
+                          className={`absolute inset-0 bg-gradient-to-br ${item.gradient} transition-opacity duration-500 ${
+                            isActive ? "opacity-100" : "opacity-0"
                           }`}
-                        >
-                          <AnimatedIcon type={item.animationType}>
-                            {item.icon}
-                          </AnimatedIcon>
+                        />
+
+                        <div className="relative z-10 p-4 md:p-6">
+                          <div className="flex justify-center mb-3">
+                            <div
+                              className={`transition-all duration-300 ${
+                                isActive
+                                  ? "text-white scale-110"
+                                  : "text-purple-600"
+                              }`}
+                            >
+                              <AnimatedIcon type={item.animationType}>
+                                {item.icon}
+                              </AnimatedIcon>
+                            </div>
+                          </div>
+
+                          <h4
+                            className={`text-base md:text-lg font-semibold text-center mb-2 transition-colors duration-300 ${
+                              isActive ? "text-white" : "text-gray-900"
+                            }`}
+                          >
+                            {item.title}
+                          </h4>
+
+                          <div
+                            className={`overflow-hidden transition-all duration-500 ${
+                              isActive
+                                ? "max-h-[1000px] opacity-100"
+                                : "max-h-0 opacity-0"
+                            }`}
+                          >
+                            <p
+                              className={`text-xs md:text-sm text-center pt-2 transition-colors duration-300 ${
+                                isActive ? "text-white/90" : "text-gray-600"
+                              }`}
+                            >
+                              {item.description}
+                            </p>
+                          </div>
                         </div>
                       </div>
-
-                      <h4
-                        className={`text-base md:text-lg font-semibold text-center mb-2 transition-colors duration-300 ${
-                          isActive ? "text-white" : "text-gray-900"
-                        }`}
-                      >
-                        {item.title}
-                      </h4>
-
-                      <div
-                        className={`overflow-hidden transition-all duration-500 ${
-                          isActive
-                            ? "max-h-[1000px] opacity-100"
-                            : "max-h-0 opacity-0"
-                        }`}
-                      >
-                        <p
-                          className={`text-xs md:text-sm text-center pt-2 transition-colors duration-300 ${
-                            isActive ? "text-white/90" : "text-gray-600"
-                          }`}
-                        >
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        </div>
-
-        {/* Footer */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 md:p-6 rounded-b-3xl text-center border-t border-purple-200">
-          <p className="text-sm md:text-base text-gray-700 mb-4">
-            Готові створити свою базу знань?
-          </p>
-          <div className="flex flex-col items-center gap-3">
-            <button
-              onClick={() => {
-                onOpenContact();
-                onOpenChange(false);
-              }}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 md:px-40 py-2 md:py-3 rounded-2xl font-semibold hover:shadow-xl transition-all hover:scale-105 text-sm md:text-base"
-            >
-              Замовити консультацію
-            </button>
-
-            <div className="flex items-center gap-3 text-sm text-gray-500">
-              <div className="h-px bg-gray-300 w-8"></div>
-              <span>або</span>
-              <div className="h-px bg-gray-300 w-8"></div>
+                    );
+                  })}
+                </div>
+              </section>
             </div>
 
-            <div className="flex items-center justify-center gap-3">
-              <a
-                href="https://t.me/bonnie_benay"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all"
-              >
-                <img
-                  alt="Telegram"
-                  className="w-7 h-7"
-                  src="https://img.icons8.com/color/48/telegram-app.png"
-                />
-              </a>
-              <a
-                href="viber://chat?number=+380950571649"
-                className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all"
-              >
-                <img
-                  alt="Viber"
-                  className="w-7 h-7"
-                  src="https://img.icons8.com/color/48/viber.png"
-                />
-              </a>
-              <a
-                href="tel:+380950571649"
-                className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all"
-              >
-                <svg className="w-5 h-5" fill="purple" viewBox="0 0 24 24">
-                  <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
-                </svg>
-              </a>
+            {/* Footer */}
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 md:p-6 rounded-b-3xl text-center border-t border-purple-200">
+              <p className="text-sm md:text-base text-gray-700 mb-4">
+                Готові створити свою базу знань?
+              </p>
+              <div className="flex flex-col items-center gap-3">
+                <Dialog.Close asChild>
+                  <button
+                    onClick={onOpenContact}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 md:px-40 py-2 md:py-3 rounded-2xl font-semibold hover:shadow-xl transition-all hover:scale-105 text-sm md:text-base"
+                  >
+                    Замовити консультацію
+                  </button>
+                </Dialog.Close>
+
+                <div className="flex items-center gap-3 text-sm text-gray-500">
+                  <div className="h-px bg-gray-300 w-8"></div>
+                  <span>або</span>
+                  <div className="h-px bg-gray-300 w-8"></div>
+                </div>
+
+                <div className="flex items-center justify-center gap-3">
+                  <a
+                    href="https://t.me/bonnie_benay"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all"
+                  >
+                    <img
+                      alt="Telegram"
+                      className="w-7 h-7"
+                      src="https://img.icons8.com/color/48/telegram-app.png"
+                    />
+                  </a>
+                  <a
+                    href="viber://chat?number=+380950571649"
+                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all"
+                  >
+                    <img
+                      alt="Viber"
+                      className="w-7 h-7"
+                      src="https://img.icons8.com/color/48/viber.png"
+                    />
+                  </a>
+                  <a
+                    href="tel:+380950571649"
+                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all"
+                  >
+                    <svg className="w-5 h-5" fill="purple" viewBox="0 0 24 24">
+                      <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
-}
+});
+
+ProjectInfoModal.displayName = 'ProjectInfoModal';
 
 export default ProjectInfoModal;
-
-// ✅ Експортуємо кнопку окремо (для використання де завгодно)
-export const ProjectInfoButton = ({ onClick }: { onClick: () => void }) => (
-  <button
-    onClick={onClick}
-    className="button-shimmer group relative px-8 py-4 bg-white text-purple-600 backdrop-blur-md rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-purple-200"
-  >
-    <span className="flex items-center gap-3 relative z-10">
-      <BookOpen className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-      Про проєкт
-    </span>
-  </button>
-);

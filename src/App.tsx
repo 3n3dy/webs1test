@@ -59,7 +59,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Header from "./components/header";
 import MultiStepFormModal from "./components/MultiStepFormModal";
 import ContactModal from "./components/ContactModal";
-import ProjectInfoModal, { ProjectInfoButton } from "./components/ProjectInfoModal";
+import ProjectInfoModal from "./components/ProjectInfoModal";
 
 // Lazy loading для важких компонентів
 const AboutAuthorModal = lazy(() => import("./components/AboutAuthorModal"));
@@ -333,19 +333,13 @@ const HeroSection = memo(() => {
   transition={{ duration: 0.8, delay: 0.2 }}
   className="flex flex-col sm:flex-row gap-6 justify-center items-center"
 >
-  {/* Кнопка "Про проєкт" */}
-  <Suspense fallback={<div className="h-[72px] w-[200px]" />}>
-    <ProjectInfoButton onClick={() => setIsProjectInfoOpen(true)} />
-  </Suspense>
+{/* Кнопка "Про проєкт" */}
+<Suspense fallback={<div className="h-[72px] w-[200px]" />}>
+  <ProjectInfoModal onOpenContact={() => setIsContactModalOpen(true)} />
+</Suspense>
 </motion.div>
 
-{/* Модалки (поза motion.div) */}
-<ProjectInfoModal
-  isOpen={isProjectInfoOpen}
-  onOpenChange={setIsProjectInfoOpen}
-  onOpenContact={() => setIsContactModalOpen(true)}
-/>
-
+{/* Модалка ContactModal */}
 <ContactModal
   isOpen={isContactModalOpen}
   onClose={() => setIsContactModalOpen(false)}
@@ -359,6 +353,7 @@ const HeroSection = memo(() => {
   <Suspense fallback={<div className="h-[148px]" />}>
     <AboutAuthorModal />
   </Suspense>
+
 </motion.div>
 
         </div>
