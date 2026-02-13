@@ -23,9 +23,9 @@ import { steps } from "./data/process";
 import { PainSolutionSection } from "./components/sections/PainSolutionSection";
 import { ReasonsSection } from "./components/sections/ReasonSection";
 import { ProcessSection } from "./components/sections/ProcessSection";
-import { PersonalCalculationSection } from './components/sections/PersonalCalculationSection';
-import { CTASection } from './components/sections/CTASection';
-import { Footer } from './components/footer';
+import { PersonalCalculationSection } from "./components/sections/PersonalCalculationSection";
+import { CTASection } from "./components/sections/CTASection";
+import { Footer } from "./components/footer";
 
 import {
   AlertCircle,
@@ -63,7 +63,6 @@ import ProjectInfoModal from "./components/ProjectInfoModal";
 
 // Lazy loading для важких компонентів
 const AboutAuthorModal = lazy(() => import("./components/AboutAuthorModal"));
-
 
 // Винесені компоненти для кращої оптимізації
 const HeroSection = memo(() => {
@@ -328,34 +327,34 @@ const HeroSection = memo(() => {
           </motion.div>
 
           <motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.8, delay: 0.2 }}
-  className="flex flex-col sm:flex-row gap-6 justify-center items-center"
->
-{/* Кнопка "Про проєкт" */}
-<Suspense fallback={<div className="h-[72px] w-[200px]" />}>
-  <ProjectInfoModal onOpenContact={() => setIsContactModalOpen(true)} />
-</Suspense>
-</motion.div>
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+          >
+            {/* Кнопка "Про проєкт" */}
+            <Suspense fallback={<div className="h-[72px] w-[200px]" />}>
+              <ProjectInfoModal
+                onOpenContact={() => setIsContactModalOpen(true)}
+              />
+            </Suspense>
+          </motion.div>
 
-{/* Модалка ContactModal */}
-<ContactModal
-  isOpen={isContactModalOpen}
-  onClose={() => setIsContactModalOpen(false)}
-/>
+          {/* Модалка ContactModal */}
+          <ContactModal
+            isOpen={isContactModalOpen}
+            onClose={() => setIsContactModalOpen(false)}
+          />
 
-<motion.div
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  transition={{ duration: 0.8, delay: 0.4 }}
->
-  <Suspense fallback={<div className="h-[148px]" />}>
-    <AboutAuthorModal />
-  </Suspense>
-
-</motion.div>
-
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <Suspense fallback={<div className="h-[148px]" />}>
+              <AboutAuthorModal />
+            </Suspense>
+          </motion.div>
         </div>
       </div>
 
