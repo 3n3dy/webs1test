@@ -58,7 +58,8 @@ export default defineConfig({
           'modals': [
             'src/components/MultiStepFormModal',
             'src/components/ContactModal',
-            'src/components/AboutAuthorModal'
+            'src/components/AboutAuthorModal',
+            'src/components/ProjectInfoModal'
           ]
         }
       }
@@ -67,7 +68,7 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: ['log', 'debug'],
         drop_debugger: true
       }
     }
