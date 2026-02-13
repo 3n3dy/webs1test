@@ -45,13 +45,34 @@ export default defineConfig({
       usePolling: true,
     },
   },
-   build: {
+  build: {
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
         consultation: path.resolve(__dirname, 'consultation.html'),
         survey: path.resolve(__dirname, 'survey.html'),
       },
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'modals': [
+            './src/components/MultiStepFormModal',
+            './src/components/ContactModal',
+            './src/components/AboutAuthorModal'
+          ]
+        }
+      }
     },
+    chunkSizeWarningLimit: 1000,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
   },
+  optimizeDeps: {
+    include: ['react', 'react-dom']
+  }
 });

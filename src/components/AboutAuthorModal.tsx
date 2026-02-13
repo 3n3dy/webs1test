@@ -65,6 +65,8 @@ const AboutAuthorModal = memo(() => {
             <img
               src="/masterhanna.jpg"
               alt="Hanna"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover"
             />
           </div>
@@ -291,6 +293,8 @@ const AboutAuthorModal = memo(() => {
                     >
                       <img
                         alt="Telegram"
+                        loading="lazy"
+                        decoding="async"
                         className="w-7 h-7"
                         src="https://img.icons8.com/color/48/telegram-app.png"
                       />
@@ -302,6 +306,8 @@ const AboutAuthorModal = memo(() => {
                     >
                       <img
                         alt="Viber"
+                        loading="lazy"
+                        decoding="async"
                         className="w-7 h-7"
                         src="https://img.icons8.com/color/48/viber.png"
                       />
@@ -315,6 +321,8 @@ const AboutAuthorModal = memo(() => {
                     >
                       <img
                         alt="LinkedIn"
+                        loading="lazy"
+                        decoding="async"
                         className="w-7 h-7"
                         src="https://img.icons8.com/color/48/linkedin.png"
                       />

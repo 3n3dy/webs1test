@@ -268,6 +268,8 @@ export const PersonalCalculationSection = memo(() => {
                 >
                   <img
                     alt="Telegram"
+                    loading="lazy"
+                    decoding="async"
                     className="w-8 h-8"
                     src="https://img.icons8.com/color/48/telegram-app.png"
                   />
@@ -278,6 +280,8 @@ export const PersonalCalculationSection = memo(() => {
                 >
                   <img
                     alt="Viber"
+                    loading="lazy"
+                    decoding="async"
                     className="w-8 h-8"
                     src="https://img.icons8.com/color/48/viber.png"
                   />
@@ -290,6 +294,8 @@ export const PersonalCalculationSection = memo(() => {
                 >
                   <img
                     alt="Facebook"
+                    loading="lazy"
+                    decoding="async"
                     className="w-8 h-8"
                     src="https://img.icons8.com/color/48/facebook-new.png"
                   />
@@ -302,6 +308,8 @@ export const PersonalCalculationSection = memo(() => {
                 >
                   <img
                     alt="LinkedIn"
+                    loading="lazy"
+                    decoding="async"
                     className="w-8 h-8"
                     src="https://img.icons8.com/color/48/linkedin.png"
                   />

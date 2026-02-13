@@ -57,12 +57,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import { motion, AnimatePresence } from "framer-motion";
 import Header from "./components/header";
-import MultiStepFormModal from "./components/MultiStepFormModal";
-import ContactModal from "./components/ContactModal";
-import ProjectInfoModal from "./components/ProjectInfoModal";
 
 // Lazy loading для важких компонентів
+const MultiStepFormModal = lazy(() => import("./components/MultiStepFormModal"));
+const ContactModal = lazy(() => import("./components/ContactModal"));
 const AboutAuthorModal = lazy(() => import("./components/AboutAuthorModal"));
+const ProjectInfoModal = lazy(() => import("./components/ProjectInfoModal"));
 
 // Винесені компоненти для кращої оптимізації
 const HeroSection = memo(() => {
@@ -341,10 +341,12 @@ const HeroSection = memo(() => {
           </motion.div>
 
           {/* Модалка ContactModal */}
-          <ContactModal
-            isOpen={isContactModalOpen}
-            onClose={() => setIsContactModalOpen(false)}
-          />
+          <Suspense fallback={<div className="loading-placeholder" />}>
+            <ContactModal
+              isOpen={isContactModalOpen}
+              onClose={() => setIsContactModalOpen(false)}
+            />
+          </Suspense>
 
           <motion.div
             initial={{ opacity: 0 }}

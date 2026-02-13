@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 interface AnimatedIconProps {
   children: ReactNode;
@@ -144,3 +144,5 @@ export const AnimatedIcon = ({ children, type = 'scale', className }: AnimatedIc
     </motion.div>
   );
 };
+
+export default React.memo(AnimatedIcon);

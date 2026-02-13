@@ -286,6 +286,8 @@ const ProjectInfoModal = memo(({ onOpenContact }: ProjectInfoModalProps) => {
                   >
                     <img
                       alt="Telegram"
+                      loading="lazy"
+                      decoding="async"
                       className="w-7 h-7"
                       src="https://img.icons8.com/color/48/telegram-app.png"
                     />
@@ -296,6 +298,8 @@ const ProjectInfoModal = memo(({ onOpenContact }: ProjectInfoModalProps) => {
                   >
                     <img
                       alt="Viber"
+                      loading="lazy"
+                      decoding="async"
                       className="w-7 h-7"
                       src="https://img.icons8.com/color/48/viber.png"
                     />

@@ -49,6 +49,8 @@ export const CTASection = memo(() => {
               >
                 <img
                   alt="Telegram"
+                  loading="lazy"
+                  decoding="async"
                   className="w-8 h-8"
                   src="https://img.icons8.com/color/48/telegram-app.png"
                 />
@@ -60,6 +62,8 @@ export const CTASection = memo(() => {
               >
                 <img
                   alt="Viber"
+                  loading="lazy"
+                  decoding="async"
                   className="w-8 h-8"
                   src="https://img.icons8.com/color/48/viber.png"
                 />
@@ -73,6 +77,8 @@ export const CTASection = memo(() => {
               >
                 <img
                   alt="Facebook"
+                  loading="lazy"
+                  decoding="async"
                   className="w-8 h-8"
                   src="https://img.icons8.com/color/48/facebook-new.png"
                 />
@@ -86,6 +92,8 @@ export const CTASection = memo(() => {
               >
                 <img
                   alt="LinkedIn"
+                  loading="lazy"
+                  decoding="async"
                   className="w-8 h-8"
                   src="https://img.icons8.com/color/48/linkedin.png"
                 />
@@ -99,6 +107,8 @@ export const CTASection = memo(() => {
             >
               <img
                 alt="Phone"
+                loading="lazy"
+                decoding="async"
                 className="w-7 h-7"
                 src="https://img.icons8.com/ios-filled/50/ffffff/phone.png"
               />

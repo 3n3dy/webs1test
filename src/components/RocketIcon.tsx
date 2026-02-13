@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useAnimation } from "framer-motion";
-import { forwardRef, useCallback, useImperativeHandle, useRef, HTMLAttributes } from "react";
+import React, { forwardRef, useCallback, useImperativeHandle, useRef, HTMLAttributes } from "react";
 
 export interface RocketIconHandle {
   startAnimation: () => void;
@@ -123,4 +123,5 @@ const RocketIcon = forwardRef<RocketIconHandle, RocketIconProps>(
 
 RocketIcon.displayName = "RocketIcon";
 
+export default React.memo(RocketIcon);
 export { RocketIcon };
