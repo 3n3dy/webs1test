@@ -106,6 +106,8 @@
   .flip-card-back {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+     -moz-backface-visibility: hidden;
+      position: absolute;
     overflow: visible;
   }
   
