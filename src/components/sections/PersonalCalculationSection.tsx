@@ -1,12 +1,17 @@
-import { memo, useState } from 'react';
+import { memo, useState, useRef } from 'react'; // додай useRef
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import MultiStepFormModal from '../MultiStepFormModal';
+
 
 export const PersonalCalculationSection = memo(() => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // ⬇️ ДОДАЙ ЦЕ
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   const services = [
     [
@@ -25,15 +30,40 @@ export const PersonalCalculationSection = memo(() => {
     ]
   ];
 
+
   const nextSlide = (e: React.MouseEvent) => {
     e.stopPropagation();
     setCurrentSlide((prev) => (prev + 1) % services.length);
   };
 
+
   const prevSlide = (e: React.MouseEvent) => {
     e.stopPropagation();
     setCurrentSlide((prev) => (prev - 1 + services.length) % services.length);
   };
+
+  // ⬇️ ДОДАЙ ЦІ 3 ФУНКЦІЇ
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(diff) > minSwipeDistance) {
+      if (diff > 0 && currentSlide < services.length - 1) {
+        setCurrentSlide((prev) => prev + 1);
+      } else if (diff < 0 && currentSlide > 0) {
+        setCurrentSlide((prev) => prev - 1);
+      }
+    }
+  };
+
 
   return (
     <div className="py-16 bg-white pb-14">
@@ -61,6 +91,7 @@ export const PersonalCalculationSection = memo(() => {
             </button>
           )}
 
+
          {/* Flip Card */}
 <div className="flip-card-container relative" style={{ perspective: '2000px', minHeight: isFlipped ? '360px' : 'auto' }}>
   <div
@@ -85,6 +116,7 @@ export const PersonalCalculationSection = memo(() => {
       </button>
     </div>
 
+
     {/* BACK */}
 {isFlipped && (
   <div 
@@ -95,8 +127,12 @@ export const PersonalCalculationSection = memo(() => {
       left: 0,
       width: '100%',
       zIndex: 10,
-      pointerEvents: 'none' // Вимикаємо клік на весь div
+      pointerEvents: 'none'
     }}
+    // ⬇️ ДОДАЙ ЦІ 3 ОБРОБНИКИ
+    onTouchStart={handleTouchStart}
+    onTouchMove={handleTouchMove}
+    onTouchEnd={handleTouchEnd}
   >
     <div className="w-full bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-3xl shadow-2xl p-5 relative">
       {/* Заголовок - МОЖНА КЛІКАТИ ДЛЯ ЗАКРИТТЯ */}
@@ -121,6 +157,7 @@ export const PersonalCalculationSection = memo(() => {
           <ChevronDown className="w-5 h-5 rotate-90" />
         </button>
 
+
         {/* Контент - НЕ МОЖНА КЛІКАТИ */}
         <div className="px-8">
           <div className="space-y-2">
@@ -134,6 +171,7 @@ export const PersonalCalculationSection = memo(() => {
           </div>
         </div>
 
+
         {/* Стрілка праворуч */}
         <button
           data-nav
@@ -145,6 +183,7 @@ export const PersonalCalculationSection = memo(() => {
           <ChevronDown className="w-5 h-5 -rotate-90" />
         </button>
       </div>
+
 
       {/* Dots індикатор - МОЖНА КЛІКАТИ ДЛЯ ЗАКРИТТЯ */}
       <div 
@@ -165,8 +204,10 @@ export const PersonalCalculationSection = memo(() => {
   </div>
 )}
 
+
   </div>
 </div>
+
 
 
           {/* Контакти */}
@@ -177,6 +218,7 @@ export const PersonalCalculationSection = memo(() => {
                 <span>або зв'яжіться з нами</span>
                 <div className="h-px bg-gray-300 w-16"></div>
               </div>
+
 
               <div className="flex items-center justify-center gap-4">
                 <a href="https://t.me/bonnie_benay" target="_blank" rel="noopener noreferrer" className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all shadow-md">
@@ -202,9 +244,11 @@ export const PersonalCalculationSection = memo(() => {
         </motion.div>
       </div>
 
+
       <MultiStepFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 });
+
 
 PersonalCalculationSection.displayName = 'PersonalCalculationSection';
