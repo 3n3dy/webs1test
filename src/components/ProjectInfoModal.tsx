@@ -94,7 +94,7 @@ const ProjectInfoModal = memo(({ onOpenContact }: ProjectInfoModalProps) => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 md:p-6 rounded-t-3xl flex items-center justify-between z-10">
+            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 md:p-6 rounded-t-3xl flex items-center justify-between z-20">
               <Dialog.Title className="text-base md:text-xl font-semibold flex items-center gap-3">
                 <Zap className="w-6 h-6 md:w-8 md:h-8" />
                 <span className="hidden sm:inline">
@@ -198,7 +198,7 @@ const ProjectInfoModal = memo(({ onOpenContact }: ProjectInfoModalProps) => {
                         onClick={() =>
                           setActiveCard(activeCard === idx ? null : idx)
                         }
-                        className={`relative bg-white rounded-xl border transition-all duration-300 overflow-hidden cursor-pointer min-h-[120px] ${
+                        className={`relative bg-white rounded-xl border transition-all duration-300 overflow-hidden cursor-pointer min-h-[120px] z-0 ${
                           isActive
                             ? "border-transparent shadow-2xl"
                             : "border-gray-200 hover:shadow-lg"
