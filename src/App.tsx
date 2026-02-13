@@ -245,7 +245,7 @@ const HeroSection = memo(() => {
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
-        style={{ pointerEvents: "auto", touchAction: "none" }}
+        style={{ pointerEvents: "auto", touchAction: "pan-y" }}
       />
 
       <div
