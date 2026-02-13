@@ -17,8 +17,6 @@ const Header = memo(() => {
         >
           <img
             alt="Лого ЗВИЧАЇКА"
-            loading="lazy"
-            decoding="async"
             className="w-full h-full object-contain"
             src="/favicon.png"
           />

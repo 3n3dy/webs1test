@@ -123,5 +123,7 @@ const RocketIcon = forwardRef<RocketIconHandle, RocketIconProps>(
 
 RocketIcon.displayName = "RocketIcon";
 
-export default React.memo(RocketIcon);
-export { RocketIcon };
+const MemoizedRocketIcon = React.memo(RocketIcon);
+
+export { MemoizedRocketIcon as RocketIcon };
+export default MemoizedRocketIcon;

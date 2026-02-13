@@ -129,7 +129,7 @@ const animations: Record<string, any> = {
   }
 };
 
-export const AnimatedIcon = ({ children, type = 'scale', className }: AnimatedIconProps) => {
+const AnimatedIcon = ({ children, type = 'scale', className }: AnimatedIconProps) => {
   const anim = animations[type] || animations.scale;
   
   return (
@@ -145,4 +145,7 @@ export const AnimatedIcon = ({ children, type = 'scale', className }: AnimatedIc
   );
 };
 
-export default React.memo(AnimatedIcon);
+const MemoizedAnimatedIcon = React.memo(AnimatedIcon);
+
+export { MemoizedAnimatedIcon as AnimatedIcon };
+export default MemoizedAnimatedIcon;

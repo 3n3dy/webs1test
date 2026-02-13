@@ -56,9 +56,9 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'modals': [
-            './src/components/MultiStepFormModal',
-            './src/components/ContactModal',
-            './src/components/AboutAuthorModal'
+            'src/components/MultiStepFormModal',
+            'src/components/ContactModal',
+            'src/components/AboutAuthorModal'
           ]
         }
       }
