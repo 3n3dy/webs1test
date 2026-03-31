@@ -28,7 +28,7 @@ export const Footer = memo(() => {
             rel="noopener noreferrer"
             className="text-center text-sm text-gray-400 hover:text-white transition-colors duration-200"
           >
-            Розробник — w3bedy.com
+            Розробка — w3bedy.com
           </a>
 
           <button
