@@ -22,7 +22,14 @@ export const Footer = memo(() => {
             </span>
           </button>
 
-          <p className="text-center">© 2026 drgnvlnc@gmail.com</p>
+          <a
+            href="https://w3bedy.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-center text-sm text-gray-400 hover:text-white transition-colors duration-200"
+          >
+            Розробник — w3bedy.com
+          </a>
 
           <button
             onClick={() => setIsPrivacyOpen(true)}
