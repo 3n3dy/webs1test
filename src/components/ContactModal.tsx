@@ -7,22 +7,30 @@ interface ContactModalProps {
   onClose: () => void;
 }
 
+const INITIAL_FORM_DATA = {
+  companyName: "",
+  fullName: "",
+  phone: "",
+  email: "",
+  comment: "",
+};
+
 const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
-
-  const [formData, setFormData] = useState({
-    companyName: "",
-    fullName: "",
-    phone: "",
-    email: "",
-    comment: "",
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbzVIp9HoUqL_Z1s3_J70BVqB4ieAQI81gFR_ql3UArRH5IrvEbLUlaVpBGZSgAB3kPc/exec";
+
+  const resetForm = () => {
+    setIsSuccess(false);
+    setAgreedToPrivacy(false);
+    setShowPrivacyPolicy(false);
+    setFormData(INITIAL_FORM_DATA);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,11 +44,9 @@ const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
     try {
       const payload = {
         timestamp: new Date().toLocaleString("uk-UA"),
-        type: "consultation", // ✅ ВАЖЛИВО: це ключове поле для розрізнення форм
+        type: "consultation",
         ...formData,
       };
-
-      console.log("📤 Відправка даних:", payload);
 
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
@@ -51,28 +57,17 @@ const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
         redirect: "follow",
       });
 
-      console.log("📥 Відповідь:", response.status);
-
       if (response.ok || response.redirected) {
-        console.log("✅ Дані успішно відправлені!");
         setIsSuccess(true);
         setTimeout(() => {
           onClose();
-          setIsSuccess(false);
-          setAgreedToPrivacy(false);
-          setFormData({
-            companyName: "",
-            fullName: "",
-            phone: "",
-            email: "",
-            comment: "",
-          });
+          resetForm();
         }, 3000);
       } else {
         throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
-      console.error("❌ Помилка:", error);
+      console.error("Contact form submission failed", error);
       alert(
         "Помилка відправки. Спробуйте ще раз або зв'яжіться з нами: hanna.ws.g@gmail.com",
       );
@@ -84,19 +79,15 @@ const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
 
   return (
     <AnimatePresence>
-<div
-  className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-  onClick={onClose}
->
+      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
 
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-            className="relative z-[201] bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
+          className="relative z-[201] max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
           <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-t-3xl flex items-center justify-between z-10">
             <div>
               <h2 className="text-3xl font-semibold mb-1">
@@ -114,7 +105,6 @@ const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
             </button>
           </div>
 
-          {/* Form Content */}
           <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
             {!isSuccess ? (
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -288,7 +278,7 @@ const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4"
             onClick={() => setShowPrivacyPolicy(false)}
           >
             <motion.div

@@ -1,26 +1,23 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import ContactModal from './components/ContactModal'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import ContactModal from "./components/ContactModal";
 
-const ConsultationPage = () => {
+export const ConsultationPage = () => {
   const handleClose = () => {
-    window.location.href = '/'
-  }
+    window.location.href = "/";
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 -z-10" />
-      <ContactModal 
-        isOpen={true} 
-        onClose={handleClose}
-      />
+      <ContactModal isOpen={true} onClose={handleClose} />
     </div>
-  )
-}
+  );
+};
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ConsultationPage />
-  </React.StrictMode>
-)
+  </React.StrictMode>,
+);

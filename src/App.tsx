@@ -14,62 +14,76 @@ import {
   CANVAS_OBJECT_COUNT,
   MOUSE_REPEL_DISTANCE,
   MOUSE_REPEL_FORCE,
+  type CanvasIcon,
 } from "./constants/canvas";
-import { throttle } from "./utils/throttle";
 import { drawIcon } from "./utils/drawIcons";
-import { pains } from "./data/pains";
-import { reasons } from "./data/reasons";
-import { steps } from "./data/process";
 import { PainSolutionSection } from "./components/sections/PainSolutionSection";
 import { ReasonsSection } from "./components/sections/ReasonSection";
 import { ProcessSection } from "./components/sections/ProcessSection";
 import { PersonalCalculationSection } from "./components/sections/PersonalCalculationSection";
 import { CTASection } from "./components/sections/CTASection";
 import { Footer } from "./components/footer";
-import YiEgg from './components/YiEgg';
-
-import {
-  AlertCircle,
-  CheckCircle,
-  Zap,
-  BookOpen,
-  ChevronRight,
-  Users,
-  TrendingUp,
-  HelpCircle,
-  X,
-  Laptop,
-  Smartphone,
-  PenTool,
-  FileText,
-  Folder,
-  Brain,
-  Coffee,
-  Book,
-  Calendar,
-  Lightbulb,
-  Paperclip,
-  Mail,
-  MessageCircle,
-  ChevronDown,
-  Phone,
-} from "lucide-react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
-import { motion, AnimatePresence } from "framer-motion";
+import YiEgg from "./components/YiEgg";
+import { CheckCircle } from "lucide-react";
+import { motion } from "framer-motion";
 import Header from "./components/header";
-import MultiStepFormModal from "./components/MultiStepFormModal";
 import ContactModal from "./components/ContactModal";
 import ProjectInfoModal from "./components/ProjectInfoModal";
 
 
 // Lazy loading для важких компонентів
 const AboutAuthorModal = lazy(() => import("./components/AboutAuthorModal"));
+const HERO_TITLE = "ПЕРЕТВОРІТЬ ХАОС НА СИСТЕМУ";
+
+type CanvasObject = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  icon: CanvasIcon;
+  rotation: number;
+  rotationSpeed: number;
+};
+
+const getHeroLetterTransform = (index: number, isMobile: boolean) => {
+  const spread = isMobile ? 220 : 440;
+  const angle = ((index + 1) * 137.508) % 360;
+  const radians = (angle * Math.PI) / 180;
+  const radius = (0.45 + (index % 5) * 0.12) * spread;
+
+  return {
+    opacity: 0,
+    x: Math.cos(radians) * radius,
+    y: Math.sin(radians) * radius,
+    rotate: ((index * 47) % 360) - 180,
+    scale: 2,
+  };
+};
+
+interface HeroSectionProps {
+  isProjectInfoOpen: boolean;
+  setIsProjectInfoOpen: (value: boolean) => void;
+  isContactModalOpen: boolean;
+  setIsContactModalOpen: (value: boolean) => void;
+}
 
 // Винесені компоненти для кращої оптимізації
-const HeroSection = memo(() => {
-  const [isProjectInfoOpen, setIsProjectInfoOpen] = useState(false);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+const HeroSection = memo(({
+  isProjectInfoOpen,
+  setIsProjectInfoOpen,
+  isContactModalOpen,
+  setIsContactModalOpen,
+}: HeroSectionProps) => {
+  const heroLetters = useMemo(() => {
+    const isMobile =
+      typeof window !== "undefined" && window.innerWidth < 768;
+
+    return HERO_TITLE.split("").map((char, index) => ({
+      char,
+      hidden: getHeroLetterTransform(index, isMobile),
+    }));
+  }, []);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const animationFrameRef = useRef<number | null>(null);
@@ -92,14 +106,23 @@ const HeroSection = memo(() => {
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const isMobileViewport = window.innerWidth < 768;
+    const objectCount = prefersReducedMotion
+      ? Math.min(CANVAS_OBJECT_COUNT, 8)
+      : isMobileViewport
+        ? Math.min(CANVAS_OBJECT_COUNT, 12)
+        : CANVAS_OBJECT_COUNT;
 
     // Встановлення розміру
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     // Ініціалізація об'єктів
-    const objects: any[] = [];
-    for (let i = 0; i < 20; i++) {
+    const objects: CanvasObject[] = [];
+    for (let i = 0; i < objectCount; i++) {
       objects.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -138,10 +161,10 @@ const HeroSection = memo(() => {
         const dy = obj.y - mouseRef.current.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist < 200 && dist > 0) {
-          const force = (200 - dist) / 200;
-          obj.vx += (dx / dist) * force * 3;
-          obj.vy += (dy / dist) * force * 3;
+        if (dist < MOUSE_REPEL_DISTANCE && dist > 0) {
+          const force = (MOUSE_REPEL_DISTANCE - dist) / MOUSE_REPEL_DISTANCE;
+          obj.vx += (dx / dist) * force * MOUSE_REPEL_FORCE;
+          obj.vy += (dy / dist) * force * MOUSE_REPEL_FORCE;
         }
 
         // 2. НЕВАГОМІСТЬ
@@ -291,26 +314,12 @@ const HeroSection = memo(() => {
               className="text-center w-full overflow-visible"
             >
               <h1 className="text-[5vw] sm:text-[6vw] md:text-5xl lg:text-6xl xl:text-7xl font-semibold text-white mb-4 md:mb-6 leading-tight flex justify-center items-center whitespace-nowrap overflow-visible">
-                {"ПЕРЕТВОРІТЬ ХАОС НА СИСТЕМУ".split("").map((char, index) => (
+                {heroLetters.map(({ char, hidden }, index) => (
                   <motion.span
                     key={index}
                     style={{ display: "inline-block", whiteSpace: "pre" }}
                     variants={{
-                      hidden: {
-                        opacity: 0,
-                        x:
-                          typeof window !== "undefined" &&
-                            window.innerWidth < 768
-                            ? Math.random() * 400 - 200
-                            : Math.random() * 800 - 400,
-                        y:
-                          typeof window !== "undefined" &&
-                            window.innerWidth < 768
-                            ? Math.random() * 400 - 200
-                            : Math.random() * 800 - 400,
-                        rotate: Math.random() * 360,
-                        scale: 2,
-                      },
+                      hidden,
                       visible: {
                         opacity: 1,
                         x: 0,
@@ -352,17 +361,15 @@ const HeroSection = memo(() => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-6 justify-center items-center"
           >
-            {/* Кнопка "Про проєкт" */}
             <Suspense fallback={<div className="h-[72px] w-[200px]" />}>
-<ProjectInfoModal
-  open={isProjectInfoOpen}
-  onOpenChange={setIsProjectInfoOpen}
-  onOpenContact={handleOpenContactFromProject}
-/>
+              <ProjectInfoModal
+                open={isProjectInfoOpen}
+                onOpenChange={setIsProjectInfoOpen}
+                onOpenContact={handleOpenContactFromProject}
+              />
             </Suspense>
           </motion.div>
 
-          {/* Модалка ContactModal */}
           <ContactModal
             isOpen={isContactModalOpen}
             onClose={() => setIsContactModalOpen(false)}
@@ -379,9 +386,6 @@ const HeroSection = memo(() => {
           </motion.div>
         </div>
       </div>
-
-
-
     </div>
   );
 });
@@ -972,13 +976,25 @@ Footer.displayName = "Footer";
 
 // Головний компонент
 const KnowledgeBaseLanding = () => {
+  const [isProjectInfoOpen, setIsProjectInfoOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const hasOpenModal = isProjectInfoOpen || isContactModalOpen;
+
   return (
     <div className="w-full">
       <Header />
-      <HeroSection />
-      <div className="absolute bottom-10 left-0 right-0 flex justify-center z-40">
-        <YiEgg 
-        />
+      <HeroSection
+        isProjectInfoOpen={isProjectInfoOpen}
+        setIsProjectInfoOpen={setIsProjectInfoOpen}
+        isContactModalOpen={isContactModalOpen}
+        setIsContactModalOpen={setIsContactModalOpen}
+      />
+      <div
+        className={`absolute bottom-10 left-0 right-0 flex justify-center transition-[z-index] ${
+          hasOpenModal ? "z-0 pointer-events-none" : "z-40"
+        }`}
+      >
+        <YiEgg />
       </div>
       <PainSolutionSection />
       <PackagesSection />

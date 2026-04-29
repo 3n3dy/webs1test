@@ -1,11 +1,28 @@
-import { FileText, Folder, Laptop, Brain, Smartphone, PenTool, Coffee, Book, Calendar, Lightbulb, Paperclip } from 'lucide-react';
+import {
+  FileText,
+  Folder,
+  Laptop,
+  Brain,
+  Smartphone,
+  PenTool,
+  Coffee,
+  Book,
+  Calendar,
+  Lightbulb,
+  Paperclip,
+} from "lucide-react";
+import type { CanvasIcon } from "../constants/canvas";
 
-export const drawIcon = (ctx: CanvasRenderingContext2D, icon: any, size: number) => {
-  ctx.strokeStyle = 'rgba(168, 85, 247, 0.6)';
-  ctx.fillStyle = 'rgba(168, 85, 247, 0.15)';
+export const drawIcon = (
+  ctx: CanvasRenderingContext2D,
+  icon: CanvasIcon,
+  size: number,
+) => {
+  ctx.strokeStyle = "rgba(168, 85, 247, 0.6)";
+  ctx.fillStyle = "rgba(168, 85, 247, 0.15)";
   ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
 
   if (icon === FileText) {
     ctx.fillRect(-size * 0.35, -size * 0.45, size * 0.7, size * 0.9);
@@ -25,8 +42,8 @@ export const drawIcon = (ctx: CanvasRenderingContext2D, icon: any, size: number)
       ctx.stroke();
     }
   } else if (icon === Folder) {
-    ctx.fillStyle = 'rgba(168, 85, 247, 0.25)';
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.6)';
+    ctx.fillStyle = "rgba(168, 85, 247, 0.25)";
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.6)";
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.moveTo(-size * 0.45, -size * 0.1);
@@ -38,7 +55,7 @@ export const drawIcon = (ctx: CanvasRenderingContext2D, icon: any, size: number)
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-    ctx.fillStyle = 'rgba(168, 85, 247, 0.35)';
+    ctx.fillStyle = "rgba(168, 85, 247, 0.35)";
     ctx.beginPath();
     ctx.moveTo(-size * 0.45, -size * 0.1);
     ctx.lineTo(-size * 0.45, -size * 0.25);
@@ -49,11 +66,11 @@ export const drawIcon = (ctx: CanvasRenderingContext2D, icon: any, size: number)
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-    ctx.fillStyle = 'rgba(168, 85, 247, 0.15)';
+    ctx.fillStyle = "rgba(168, 85, 247, 0.15)";
     ctx.beginPath();
     ctx.rect(-size * 0.4, 0, size * 0.8, size * 0.35);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.3)';
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.3)";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(-size * 0.4, size * 0.1);
@@ -75,8 +92,8 @@ export const drawIcon = (ctx: CanvasRenderingContext2D, icon: any, size: number)
     ctx.stroke();
     ctx.strokeRect(-size * 0.15, size * 0.17, size * 0.3, size * 0.06);
   } else if (icon === Brain) {
-    ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.6)';
+    ctx.fillStyle = "rgba(168, 85, 247, 0.2)";
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.6)";
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.moveTo(-size * 0.05, -size * 0.35);
@@ -96,14 +113,14 @@ export const drawIcon = (ctx: CanvasRenderingContext2D, icon: any, size: number)
     ctx.lineTo(size * 0.02, size * 0.35);
     ctx.fill();
     ctx.stroke();
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.7)';
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.7)";
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(0, -size * 0.35);
     ctx.quadraticCurveTo(-size * 0.03, -size * 0.15, 0, 0);
     ctx.quadraticCurveTo(size * 0.03, size * 0.15, 0, size * 0.35);
     ctx.stroke();
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.5)';
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.5)";
     ctx.lineWidth = 1.8;
     ctx.beginPath();
     ctx.moveTo(-size * 0.35, -size * 0.25);
@@ -183,7 +200,7 @@ export const drawIcon = (ctx: CanvasRenderingContext2D, icon: any, size: number)
     ctx.arc(0, size * 0.38, size * 0.06, 0, Math.PI * 2);
     ctx.stroke();
   } else if (icon === PenTool) {
-    ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
+    ctx.fillStyle = "rgba(168, 85, 247, 0.2)";
     ctx.beginPath();
     ctx.moveTo(-size * 0.06, -size * 0.4);
     ctx.lineTo(-size * 0.08, size * 0.2);
@@ -192,7 +209,7 @@ export const drawIcon = (ctx: CanvasRenderingContext2D, icon: any, size: number)
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.3)';
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.3)";
     ctx.lineWidth = 1;
     for (let i = 0; i < 6; i++) {
       const y = -size * 0.3 + i * size * 0.08;
@@ -201,18 +218,18 @@ export const drawIcon = (ctx: CanvasRenderingContext2D, icon: any, size: number)
       ctx.lineTo(size * 0.06, y);
       ctx.stroke();
     }
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.7)';
-    ctx.fillStyle = 'rgba(168, 85, 247, 0.25)';
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.7)";
+    ctx.fillStyle = "rgba(168, 85, 247, 0.25)";
     ctx.lineWidth = 2.5;
     ctx.fillRect(-size * 0.08, size * 0.2, size * 0.16, size * 0.08);
     ctx.strokeRect(-size * 0.08, size * 0.2, size * 0.16, size * 0.08);
-    ctx.fillStyle = 'rgba(168, 85, 247, 0.35)';
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.6)';
+    ctx.fillStyle = "rgba(168, 85, 247, 0.35)";
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.6)";
     ctx.beginPath();
     ctx.roundRect(-size * 0.07, size * 0.28, size * 0.14, size * 0.15, size * 0.02);
     ctx.fill();
     ctx.stroke();
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.4)';
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.4)";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(-size * 0.07, size * 0.33);

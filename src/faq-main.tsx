@@ -1,12 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import { FAQModal } from './components/footer/FAQModal';
-import { faqData } from './data/faq';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import { FAQModal } from "./components/footer/FAQModal";
+import { faqData } from "./data/faq";
 
-const FAQPage = () => {
+export const FAQPage = () => {
   const handleClose = () => {
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   return (
@@ -17,8 +17,8 @@ const FAQPage = () => {
   );
 };
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <FAQPage />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
