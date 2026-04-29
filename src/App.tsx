@@ -1,5 +1,5 @@
 import "./App.css";
-import React, {
+import {
   useState,
   useEffect,
   useRef,
@@ -62,6 +62,7 @@ import MultiStepFormModal from "./components/MultiStepFormModal";
 import ContactModal from "./components/ContactModal";
 import ProjectInfoModal from "./components/ProjectInfoModal";
 
+
 // Lazy loading для важких компонентів
 const AboutAuthorModal = lazy(() => import("./components/AboutAuthorModal"));
 
@@ -72,6 +73,18 @@ const HeroSection = memo(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const animationFrameRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (isProjectInfoOpen || isContactModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isProjectInfoOpen, isContactModalOpen]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -239,7 +252,13 @@ const HeroSection = memo(() => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+  const handleOpenContactFromProject = () => {
+    setIsProjectInfoOpen(false);
 
+    setTimeout(() => {
+      setIsContactModalOpen(true);
+    }, 150);
+  };
   return (
     <div className="-mt-8 relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-800 to-pink-800 overflow-hidden">
       <canvas
@@ -281,12 +300,12 @@ const HeroSection = memo(() => {
                         opacity: 0,
                         x:
                           typeof window !== "undefined" &&
-                          window.innerWidth < 768
+                            window.innerWidth < 768
                             ? Math.random() * 400 - 200
                             : Math.random() * 800 - 400,
                         y:
                           typeof window !== "undefined" &&
-                          window.innerWidth < 768
+                            window.innerWidth < 768
                             ? Math.random() * 400 - 200
                             : Math.random() * 800 - 400,
                         rotate: Math.random() * 360,
@@ -335,9 +354,11 @@ const HeroSection = memo(() => {
           >
             {/* Кнопка "Про проєкт" */}
             <Suspense fallback={<div className="h-[72px] w-[200px]" />}>
-              <ProjectInfoModal
-                onOpenContact={() => setIsContactModalOpen(true)}
-              />
+<ProjectInfoModal
+  open={isProjectInfoOpen}
+  onOpenChange={setIsProjectInfoOpen}
+  onOpenContact={handleOpenContactFromProject}
+/>
             </Suspense>
           </motion.div>
 
@@ -359,8 +380,8 @@ const HeroSection = memo(() => {
         </div>
       </div>
 
-      
-      
+
+
     </div>
   );
 });
@@ -798,13 +819,12 @@ const PackagesSection = memo(() => {
         >
           {activePackage !== null && (
             <div
-              className={`absolute inset-0 bg-gradient-to-r ${
-                activePackage === 0
+              className={`absolute inset-0 bg-gradient-to-r ${activePackage === 0
                   ? "from-gray-900 via-purple-900 to-purple-800"
                   : activePackage === 1
                     ? "from-purple-900 via-purple-800 to-purple-900"
                     : "from-purple-800 to-gray-950"
-              } z-0 rounded-3xl`}
+                } z-0 rounded-3xl`}
             ></div>
           )}
 
@@ -825,9 +845,8 @@ const PackagesSection = memo(() => {
           )}
 
           <div
-            className={`grid grid-cols-1 md:grid-cols-3 transition-all duration-500 ${
-              activePackage !== null ? "gap-0" : "gap-8"
-            } ${activePackage !== null ? "relative z-10" : ""}`}
+            className={`grid grid-cols-1 md:grid-cols-3 transition-all duration-500 ${activePackage !== null ? "gap-0" : "gap-8"
+              } ${activePackage !== null ? "relative z-10" : ""}`}
           >
             {packages.map((pkg, pkgIndex) => {
               const isFlipped = activePackage !== null;
@@ -848,9 +867,8 @@ const PackagesSection = memo(() => {
                   >
                     {/* FRONT */}
                     <div
-                      className={`flip-card-front w-full bg-white rounded-3xl shadow-xl cursor-pointer flex flex-col ${
-                        pkg.popular ? "ring-4 ring-purple-500" : ""
-                      } ${isFlipped ? "absolute inset-0" : "relative"}`}
+                      className={`flip-card-front w-full bg-white rounded-3xl shadow-xl cursor-pointer flex flex-col ${pkg.popular ? "ring-4 ring-purple-500" : ""
+                        } ${isFlipped ? "absolute inset-0" : "relative"}`}
                     >
                       <div className="p-6 lg:p-8 flex flex-col h-full">
                         {pkg.badge && (
@@ -890,15 +908,14 @@ const PackagesSection = memo(() => {
 
                     {/* BACK - ✅ УМОВНА ВИСОТА */}
                     <div
-                      className={`flip-card-back absolute w-full p-6 lg:p-8 text-white relative z-10 transition-all duration-500 overflow-y-auto ${
-                        activePackage !== null
+                      className={`flip-card-back absolute w-full p-6 lg:p-8 text-white relative z-10 transition-all duration-500 overflow-y-auto ${activePackage !== null
                           ? pkgIndex === 0
                             ? "rounded-l-3xl"
                             : pkgIndex === 2
                               ? "rounded-r-3xl"
                               : ""
                           : "rounded-3xl"
-                      }`}
+                        }`}
                       style={{
                         boxShadow: "0 0 25px rgba(255, 255, 255, 0.12)",
                         minHeight: isFlipped ? "650px" : "0", // ✅ ТІЛЬКИ КОЛИ ПЕРЕВЕРНУТА
@@ -959,9 +976,10 @@ const KnowledgeBaseLanding = () => {
     <div className="w-full">
       <Header />
       <HeroSection />
-   <div className="absolute bottom-10 left-0 right-0 flex justify-center z-40">
-  <YiEgg />
-</div>
+      <div className="absolute bottom-10 left-0 right-0 flex justify-center z-40">
+        <YiEgg 
+        />
+      </div>
       <PainSolutionSection />
       <PackagesSection />
       <PersonalCalculationSection />

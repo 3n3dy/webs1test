@@ -24,8 +24,10 @@ type SandParticle = {
   x: number;
   delay: number;
 };
-
-export default function YiHourglassEasterEgg() {
+interface YiHourglassEasterEggProps {
+  disabled?: boolean;
+}
+export default function YiHourglassEasterEgg({ disabled = false }: YiHourglassEasterEggProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [clickCount, setClickCount] = useState(0);
@@ -66,6 +68,15 @@ export default function YiHourglassEasterEgg() {
       }
     };
   }, [isHovered]);
+  useEffect(() => {
+  if (disabled) {
+    setIsHovered(false);
+    setShowTooltip(false);
+    setShowEasterEgg(false);
+    setClickCount(0);
+  }
+}, [disabled]);
+
 
   const spawnParticles = () => {
     const newParticles: SandParticle[] = Array.from({ length: 8 }, (_, i) => ({
@@ -82,6 +93,8 @@ export default function YiHourglassEasterEgg() {
   };
 
   const handleClick = () => {
+    if (disabled) return; // Елемент не реагує, якщо вимкнений
+    
     const next = clickCount + 1;
     setClickCount(next);
     setIsFlipped((f) => !f);
@@ -149,25 +162,33 @@ export default function YiHourglassEasterEgg() {
 
       {/* The Ї Hourglass */}
       <motion.div
-        animate={
-          isHovered
-            ? { scale: 1.08 }
-            : {
-                y: [0, -8, 0], // менша амплітуда
-                transition: {
-                  duration: 1.2, // повільніший стрибок
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                },
-              }
-        }
-        whileTap={{ scale: 0.9 }}
-        onClick={handleClick}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        className="cursor-pointer select-none"
-        style={{ display: "inline-block" }}
-      >
+  animate={
+    disabled
+      ? { scale: 1, y: 0 } // Фіксуємо стан, коли вимкнено
+      : isHovered
+        ? { scale: 1.08 }
+        : {
+            y: [0, -8, 0],
+            transition: {
+              duration: 1.2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            },
+          }
+  }
+  whileTap={disabled ? undefined : { scale: 0.9 }}
+  onClick={handleClick}
+  onHoverStart={() => {
+    if (disabled) return;
+    setIsHovered(true);
+  }}
+  onHoverEnd={() => {
+    if (disabled) return;
+    setIsHovered(false);
+  }}
+  className={`select-none ${disabled ? "opacity-40 cursor-default" : "cursor-pointer"}`}
+  style={{ display: "inline-block" }}
+>
         <motion.div
           animate={{ rotate: isFlipped ? 180 : 0 }}
           transition={{ type: "spring", stiffness: 200, damping: 15 }}

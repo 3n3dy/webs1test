@@ -8,10 +8,12 @@ import { AnimatedIcon } from "./AnimatedIcon";
 import { useState } from "react";
 
 interface ProjectInfoModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onOpenContact: () => void;
 }
 
-const ProjectInfoModal = memo(({ onOpenContact }: ProjectInfoModalProps) => {
+const ProjectInfoModal = memo(({ open, onOpenChange, onOpenContact }: ProjectInfoModalProps) => {
   const [activeCard, setActiveCard] = useState<number | null>(null);
 
   const cards = [
@@ -60,7 +62,7 @@ const ProjectInfoModal = memo(({ onOpenContact }: ProjectInfoModalProps) => {
   ];
 
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Trigger asChild>
         <button className="button-shimmer group relative px-8 py-4 bg-white text-purple-600 backdrop-blur-md rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-purple-200">
           <span className="flex items-center gap-3 relative z-10">
