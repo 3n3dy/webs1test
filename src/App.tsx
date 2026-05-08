@@ -1,13 +1,13 @@
 import "./App.css";
 import {
-  useState,
-  useEffect,
-  useRef,
   useCallback,
-  useMemo,
-  memo,
   lazy,
+  memo,
   Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 import {
   CANVAS_ICONS,
@@ -29,11 +29,31 @@ import { motion } from "framer-motion";
 import Header from "./components/header";
 import ContactModal from "./components/ContactModal";
 import ProjectInfoModal from "./components/ProjectInfoModal";
-
+import {
+  packageDetailColumns,
+  servicePackages,
+  type ServicePackage,
+} from "./data/packages";
 
 // Lazy loading для важких компонентів
 const AboutAuthorModal = lazy(() => import("./components/AboutAuthorModal"));
 const HERO_TITLE = "ПЕРЕТВОРІТЬ ХАОС НА СИСТЕМУ";
+const HERO_SUBTITLES = [
+  "Системність для малого та середнього бізнесу.",
+  "Від безладдя до структурованого навчання.",
+] as const;
+const OFFSCREEN_POINTER_POSITION = { x: -1000, y: -1000 };
+const CONTACT_MODAL_OPEN_DELAY_MS = 150;
+const SPRING_LETTER_TRANSITION = {
+  type: "spring",
+  damping: 15,
+  stiffness: 100,
+} as const;
+const HERO_LETTER_VARIANTS = {
+  visible: {
+    transition: { staggerChildren: 0.03, delayChildren: 0.2 },
+  },
+} as const;
 
 type CanvasObject = {
   x: number;
@@ -45,6 +65,8 @@ type CanvasObject = {
   rotation: number;
   rotationSpeed: number;
 };
+
+type PackageGradientMap = Record<number, string>;
 
 const getHeroLetterTransform = (index: number, isMobile: boolean) => {
   const spread = isMobile ? 220 : 440;
@@ -61,6 +83,23 @@ const getHeroLetterTransform = (index: number, isMobile: boolean) => {
   };
 };
 
+const ACTIVE_PACKAGE_GRADIENTS: PackageGradientMap = {
+  0: "from-gray-900 via-purple-900 to-purple-800",
+  1: "from-purple-900 via-purple-800 to-purple-900",
+  2: "from-purple-800 to-gray-950",
+};
+
+const getActivePackageGradient = (activePackage: number | null) => {
+  if (activePackage === null) {
+    return "";
+  }
+
+  return ACTIVE_PACKAGE_GRADIENTS[activePackage] ?? ACTIVE_PACKAGE_GRADIENTS[2];
+};
+
+const getPackageDetailsByColumn = (activePackage: number, columnIndex: number) =>
+  packageDetailColumns[activePackage * 3 + columnIndex]?.items ?? [];
+
 interface HeroSectionProps {
   isProjectInfoOpen: boolean;
   setIsProjectInfoOpen: (value: boolean) => void;
@@ -76,8 +115,7 @@ const HeroSection = memo(({
   setIsContactModalOpen,
 }: HeroSectionProps) => {
   const heroLetters = useMemo(() => {
-    const isMobile =
-      typeof window !== "undefined" && window.innerWidth < 768;
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
     return HERO_TITLE.split("").map((char, index) => ({
       char,
@@ -85,8 +123,9 @@ const HeroSection = memo(({
     }));
   }, []);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouseRef = useRef({ x: -1000, y: -1000 });
+  const mouseRef = useRef(OFFSCREEN_POINTER_POSITION);
   const animationFrameRef = useRef<number | null>(null);
+  const contactOpenTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (isProjectInfoOpen || isContactModalOpen) {
@@ -145,7 +184,7 @@ const HeroSection = memo(({
     };
 
     const handleMouseLeave = () => {
-      mouseRef.current = { x: -1000, y: -1000 };
+      mouseRef.current = OFFSCREEN_POINTER_POSITION;
     };
 
     canvas.addEventListener("mousemove", handleMouseMove);
@@ -275,13 +314,23 @@ const HeroSection = memo(({
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (contactOpenTimeoutRef.current !== null) {
+        window.clearTimeout(contactOpenTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleOpenContactFromProject = () => {
     setIsProjectInfoOpen(false);
 
-    setTimeout(() => {
+    contactOpenTimeoutRef.current = window.setTimeout(() => {
       setIsContactModalOpen(true);
-    }, 150);
+    }, CONTACT_MODAL_OPEN_DELAY_MS);
   };
+
   return (
     <div className="-mt-8 relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-800 to-pink-800 overflow-hidden">
       <canvas
@@ -306,11 +355,7 @@ const HeroSection = memo(({
             <motion.div
               initial="hidden"
               animate="visible"
-              variants={{
-                visible: {
-                  transition: { staggerChildren: 0.03, delayChildren: 0.2 },
-                },
-              }}
+              variants={HERO_LETTER_VARIANTS}
               className="text-center w-full overflow-visible"
             >
               <h1 className="text-[5vw] sm:text-[6vw] md:text-5xl lg:text-6xl xl:text-7xl font-semibold text-white mb-4 md:mb-6 leading-tight flex justify-center items-center whitespace-nowrap overflow-visible">
@@ -326,11 +371,7 @@ const HeroSection = memo(({
                         y: 0,
                         rotate: 0,
                         scale: 1,
-                        transition: {
-                          type: "spring",
-                          damping: 15,
-                          stiffness: 100,
-                        },
+                        transition: SPRING_LETTER_TRANSITION,
                       },
                     }}
                   >
@@ -345,12 +386,18 @@ const HeroSection = memo(({
                 transition={{ delay: 1.5, duration: 0.8 }}
                 className="max-w-5xl mx-auto px-4"
               >
-                <p className="text-sm sm:text-base md:text-2xl lg:text-3xl xl:text-4xl font-medium md:font-semibold text-purple-200 tracking-normal whitespace-normal md:whitespace-nowrap">
-                  Системність для малого та середнього бізнесу.
-                </p>
-                <p className="mt-4 sm:mt-6 md:mt-8 text-sm sm:text-base md:text-2xl lg:text-3xl xl:text-3xl font-medium md:font-semibold text-purple-200 tracking-normal whitespace-normal md:whitespace-nowrap">
-                  Від безладдя до структурованого навчання.
-                </p>
+                {HERO_SUBTITLES.map((line, index) => (
+                  <p
+                    key={line}
+                    className={`text-sm sm:text-base md:text-2xl lg:text-3xl font-medium md:font-semibold text-purple-200 tracking-normal whitespace-normal md:whitespace-nowrap ${
+                      index === 0
+                        ? "xl:text-4xl"
+                        : "mt-4 sm:mt-6 md:mt-8 xl:text-3xl"
+                    }`}
+                  >
+                    {line}
+                  </p>
+                ))}
               </motion.div>
             </motion.div>
           </motion.div>
@@ -399,399 +446,9 @@ PainSolutionSection.displayName = "PainSolutionSection";
 // Секція пакетів
 const PackagesSection = memo(() => {
   const [activePackage, setActivePackage] = useState<number | null>(null);
-
-  const packages = useMemo(
-    () => [
-      {
-        name: "«Порядок на вчора»",
-        price: "від $500",
-        badge: "Для малого бізнесу",
-        color: "from-gray-900 via-purple-900 to-purple-800",
-        features: [
-          "Команди до 6 осіб",
-          "Поверхневий аудит основ",
-          "Базова структура даних",
-          "Обробка до 20 файлів",
-          "Інтеграція до 3х безкоштовних сервісів",
-          "Супровід після - 5 годин",
-          "Впровадження 1-2 тижні",
-        ],
-      },
-      {
-        name: "«Корпоративна культура та ШІ»",
-        price: "від $1200",
-        badge: "Для зростаючих команд",
-        color: "from-purple-700 via-purple-800 to-purple-800",
-        popular: true,
-        features: [
-          "Команди до 12 осіб",
-          "Поглиблений аудит процесів",
-          "Розширена структура даних",
-          "Обробка до 35 файлів",
-          "Інтеграція до 5 інструментів + ШІ",
-          "Супровід після - 8 годин",
-          "Впровадження 3-5 тижнів",
-        ],
-      },
-      {
-        name: "Цифровий мозок компанії",
-        price: "від $2500",
-        badge: "Перезапуск або з нуля",
-        color: "from-purple-800 to-gray-950",
-        features: [
-          "Старт з нуля, рестарт або вихід з хаосу",
-          "Аудит Full Immersion + Відео-бібліотека",
-          "Створення Wiki-систем та LMS",
-          "Автоматизація та ШІ-асистенти",
-          "Необмежений стек інструментів",
-          "Супровід після - 15 годин",
-          "Впровадження 2-3 місяці",
-        ],
-      },
-    ],
-    [],
-  );
-
-  const allColumns = useMemo(
-    () => [
-      // Колонка 1 - для Картки 1, Ліва позиція
-      {
-        items: [
-          {
-            label: (
-              <>
-                <span className="text-purple-600 inline-block animate-glow">
-                  ✦{" "}
-                </span>
-                <span> Адаптація / Результат</span>
-              </>
-            ),
-
-            value: (
-              <>
-                Цифровий порядок: Створення логічної та інтуїтивно зрозумілої
-                архітектури папок (структура, де кожен файл має своє місце).
-                Швидкий старт: Готовий чек-лист для адаптації нового
-                співробітника, що дозволяє власнику не пояснювати базові речі
-                «на пальцях». Розробка до 5 ключових інструкцій або регламентів
-                (наприклад, «Як ми зберігаємо файли», «Правила комунікації»).
-              </>
-            ),
-          },
-          {
-            label: <>Терміни впровадження:</>,
-            value: (
-              <>1–2 тижні після завершення аудиту та погодження плану дій.</>
-            ),
-          },
-          {
-            label: <>Супровідні години:</>,
-            value: (
-              <>
-                5 годин підтримки та консультацій після впровадження системи для
-                корекції процесів та відповідей на запитання команди.
-              </>
-            ),
-          },
-        ],
-      },
-      // Колонка 2 - для Картки 1, Середня позиція
-      {
-        items: [
-          {
-            label: <>Фішка пакету:</>,
-            value: (
-              <>
-                Чек-листи адаптації. Це не просто список справ, а перший крок до
-                вашої майбутньої корпоративної «Вікіпедії». Він знімає з
-                власника головний біль при наймі перших асистентів або дає
-                чіткий план дій для помічника.
-              </>
-            ),
-          },
-          {
-            label: <>Орієнтовна вартість:</>,
-            value: (
-              <>
-                $500 (21,000 – 25,000 грн). Фінальна пропозиція щодо бюджету
-                буде підготовлена після завершення аудиту та погодження плану
-                дій.
-              </>
-            ),
-          },
-          {
-            label: <>Ідеально підходить</>,
-            value: (
-              <>
-                Для мікробізнесу, малих команд, та соло підприємців які
-                відчувають «інформаційну задуху»: документи розкидані по поштах
-                та месенджерах, а кожен новий файл створює ще більше хаосу в
-                Google Drive.
-              </>
-            ),
-          },
-        ],
-      },
-      // Колонка 3 - для Картки 1, Права позиція
-      {
-        items: [
-          {
-            label: <>Обсяг роботи / Глибина занурення </>,
-            value: (
-              <>
-                Глибина: Поверхнева систематизація існуючих активів
-                (документів). Ми не змінюємо вашу стратегію, ми наводимо лад у
-                тому, що вже є. Фокус: Архітектура хмарного сховища та критично
-                важливі документів. Створення базової структури бази даних
-                (папки, теги, рівні доступу). Обсяг: Опрацювання до 20 ключових
-                файлів/документів компанії.{" "}
-              </>
-            ),
-          },
-          {
-            label: <>Інновації / Інструменти</>,
-            value: (
-              <>
-                Використання перевіреного безкоштовного софту під специфіку
-                бізнесу, що не створює додаткового фінансового навантаження на
-                бюджет: Google Workspace (систематизація Drive). Інтеграція з
-                Notion, xTiles або OneNote (базове структурування даних).
-                Впровадження до 3 нових інструментів на вибір (таск-менеджери,
-                календарі тощо).
-              </>
-            ),
-          },
-        ],
-      },
-      // Колонка 4 - для Картки 2, Ліва позиція
-      {
-        items: [
-          {
-            label: <>Ідеально підходить:</>,
-            value: (
-              <>
-                Для вже зростаючих компаній та команд 7-12 чоловік. Коли власник
-                вже не може контролювати кожного особисто і потребує, щоб
-                система сама «навчала» та «спрямовувала» працівників.
-              </>
-            ),
-          },
-          {
-            label: <>Супровідні години</>,
-            value: (
-              <>
-                8 годин підтримки після впровадження. Цього достатньо для
-                «тонкого налаштування» системи під реальні відгуки команди.
-              </>
-            ),
-          },
-          {
-            label: <>Інновації / Інструменти</>,
-            value: (
-              <>
-                Smart-система: Впровадження Таск-менеджера на вибір як основного
-                робочого простору. ШІ-помічники: Базова інтеграція Gemini або
-                ChatGPT у робочі процеси для генерації контенту, відповідей
-                клієнтам або аналізу текстів. Впровадження до 5 нових
-                інструментів для автоматизації рутини.
-              </>
-            ),
-          },
-        ],
-      },
-      // Колонка 5 - для Картки 2, Середня позиція
-      {
-        items: [
-          {
-            label: (
-              <>
-                <span className="text-purple-600 inline-block animate-glow">
-                  ✦{" "}
-                </span>
-                <span> Адаптація / Результат</span>
-              </>
-            ),
-
-            value: (
-              <>
-                Корпоративна Вікіпедія: Створення повноцінної бази знань, де
-                зібрані всі правила та стандарти компанії. Автоматизована
-                адаптація: Розробка персональних баз знань під конкретні посади
-                (Продажі, Склад, Адмін) та система тестів для перевірки знань
-                стажерів. Розробка до 5 ключових інструкцій або регламентів
-                (наприклад, «Як ми зберігаємо файли», «Правила комунікації»,
-                «Інструкція посади»).
-              </>
-            ),
-          },
-          {
-            label: <>Масштабування</>,
-            value: (
-              <>
-                Система розроблена з можливістю масштабування до 100+
-                користувачів без зміни архітектури.
-              </>
-            ),
-          },
-          {
-            label: <>Орієнтовна вартість</>,
-            value: (
-              <>
-                $1,200 (51,800 – 65,000 грн). Фінальна пропозиція щодо бюджету
-                буде підготовлена після завершення аудиту та погодження плану
-                дій.
-              </>
-            ),
-          },
-        ],
-      },
-      // Колонка 6 - для Картки 2, Права позиція
-      {
-        items: [
-          {
-            label: <>Термін впровадження</>,
-            value: (
-              <>3–5 тижнів після завершення аудиту та погодження плану дій. </>
-            ),
-          },
-          {
-            label: <>Фішка пакету</>,
-            value: (
-              <>
-                Діалог зі «Звичаями»: Через особисті інтерв'ю з кожною посадою я
-                виявляю приховані проблеми, які не видно в звітах. Це дозволяє
-                впровадити ШІ саме туди, де він звільнить найбільше часу.
-              </>
-            ),
-          },
-          {
-            label: <>Обсяг роботи / Глибина занурення</>,
-            value: (
-              <>
-                Глибина: Середня. Ми занурюємося в людський фактор через
-                інтерв'ю та досліджуємо наявну базу знань, процеси CRM чи інших
-                програм що використовуються. Фокус: Створення «командного
-                розуму» та усунення дублювання функцій. Обсяг: Обробка до 35
-                ключових документів та аналіз існуючої ERP/CRM-системи.
-              </>
-            ),
-          },
-        ],
-      },
-      // Колонка 7 - для Картки 3, Ліва позиція
-      {
-        items: [
-          {
-            label: <>Інновації / Інструменти </>,
-            value: (
-              <>
-                Універсальний стек (All-in-one). Працюємо з будь-якими
-                інструментами, що потрібні саме вам: CRM + Task Managers (Asana,
-                ClickUp, Notion тощо). Глибока AI-інтеграція: ШІ не просто як
-                чат, а як незамінний помічник для команди (звіти, аналіз
-                запитів, генерація довідок).
-              </>
-            ),
-          },
-          {
-            label: <>Фішка пакету</>,
-            value: (
-              <>
-                Універсальність «любе-голубе»: Цей пакет не обмежений кількістю
-                людей чи галуззю. Це повна архітектурна розробка: ми беремо те,
-                що є (навіть якщо це хаос), і перетворюємо на впорядковану
-                систему, що працює, або створюємо її.
-              </>
-            ),
-          },
-          {
-            label: <>Супровідні години </>,
-            value: (
-              <>
-                15 годин підтримки для шліфування процесів, навчання керівної
-                ланки та фіксації «звичаїв» компанії.{" "}
-              </>
-            ),
-          },
-        ],
-      },
-      // Колонка 8 - для Картки 3, Середня позиція
-      {
-        items: [
-          {
-            label: <>Обсяг роботи / Глибина занурення</>,
-            value: (
-              <>
-                Глибина: Максимальна. Повний аналіз бізнес-процесів, культури та
-                операційної моделі компанії. Фокус: Побудова або повна
-                реконструкція системи управління знаннями та процесами. Обсяг:
-                Необмежена кількість документів, повна інтеграція всіх систем
-                компанії.
-              </>
-            ),
-          },
-          {
-            label: <>Термін впровадження</>,
-            value: (
-              <>
-                2–3 місяці (залежно від складності «воскресіння» або
-                масштабування процесів).{" "}
-              </>
-            ),
-          },
-          {
-            label: <>Орієнтовна вартість </>,
-            value: (
-              <>
-                Від $2,500 (107,500 грн) Фінальна пропозиція щодо бюджету буде
-                підготовлена після завершення аудиту та погодження плану
-                дій.{" "}
-              </>
-            ),
-          },
-        ],
-      },
-      // Колонка 9 - для Картки 3, Права позиція
-      {
-        items: [
-          {
-            label: (
-              <>
-                <span className="text-purple-600 inline-block animate-glow">
-                  ✦{" "}
-                </span>
-                <span> Адаптація / Результат</span>
-              </>
-            ),
-
-            value: (
-              <>
-                Компанія стає «прозорою» та керованою. Автоматизований
-                onboarding: Нові люди навчаються самі через базу знань.
-                Підготовка асистента: навчаємо вашого співробітника бути
-                «охоронем системи», щоб вона не розвалилася після мого виходу.
-                Корпоративна Вікіпедія: Створення повноцінної бази знань, де
-                зібрані всі правила та стандарти компанії.{" "}
-              </>
-            ),
-          },
-          {
-            label: <>Ідеально підходить</>,
-            value: (
-              <>
-                Для будь-якого масштабу та стадії бізнесу. Стартапи: Побудова
-                фундаменту з нуля, щоб не «гасити пожежі» пізніше.
-                Трансформація: Коли компанія змінює стратегію або напрямок.
-                Реанімація: «Воскресіння» процесів, які перестали працювати або
-                застаріли. Вихід з операційки: Для власників, що прагнуть
-                передати управління системі.
-              </>
-            ),
-          },
-        ],
-      },
-    ],
-    [],
+  const activePackageGradient = useMemo(
+    () => getActivePackageGradient(activePackage),
+    [activePackage],
   );
 
   const toggleCard = useCallback((index: number) => {
@@ -823,12 +480,7 @@ const PackagesSection = memo(() => {
         >
           {activePackage !== null && (
             <div
-              className={`absolute inset-0 bg-gradient-to-r ${activePackage === 0
-                  ? "from-gray-900 via-purple-900 to-purple-800"
-                  : activePackage === 1
-                    ? "from-purple-900 via-purple-800 to-purple-900"
-                    : "from-purple-800 to-gray-950"
-                } z-0 rounded-3xl`}
+              className={`absolute inset-0 bg-gradient-to-r ${activePackageGradient} z-0 rounded-3xl`}
             ></div>
           )}
 
@@ -842,7 +494,7 @@ const PackagesSection = memo(() => {
                 <div className="w-16 h-0.5 bg-white/30"></div>
               </div>
               <h3 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white text-center mb-6">
-                {packages[activePackage].name}
+                {servicePackages[activePackage].name}
               </h3>
               <div className="w-32 h-1 bg-gradient-to-r from-transparent via-white/60 to-transparent mx-auto rounded-full"></div>
             </div>
@@ -852,7 +504,7 @@ const PackagesSection = memo(() => {
             className={`grid grid-cols-1 md:grid-cols-3 transition-all duration-500 ${activePackage !== null ? "gap-0" : "gap-8"
               } ${activePackage !== null ? "relative z-10" : ""}`}
           >
-            {packages.map((pkg, pkgIndex) => {
+            {servicePackages.map((pkg: ServicePackage, pkgIndex) => {
               const isFlipped = activePackage !== null;
 
               return (
@@ -930,10 +582,8 @@ const PackagesSection = memo(() => {
                       {activePackage !== null && (
                         <div className="w-full h-full flex flex-col">
                           <div className="space-y-5 overflow-y-auto flex-1">
-                            {(() => {
-                              const columnIndex = activePackage * 3 + pkgIndex;
-                              const column = allColumns[columnIndex];
-                              return column?.items.map((item, idx) => (
+                            {getPackageDetailsByColumn(activePackage, pkgIndex).map(
+                              (item, idx) => (
                                 <div
                                   key={idx}
                                   className="p-4 lg:p-6 bg-white/10 rounded-xl hover:bg-white/15 transition-all"
@@ -945,8 +595,8 @@ const PackagesSection = memo(() => {
                                     {item.value}
                                   </p>
                                 </div>
-                              ));
-                            })()}
+                              ),
+                            )}
                           </div>
                         </div>
                       )}
