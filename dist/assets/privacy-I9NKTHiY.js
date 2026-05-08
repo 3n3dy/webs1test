@@ -1,0 +1,1 @@
+import{d as t,j as e,e as r}from"./x-CZet3DeI.js";import{P as s}from"./PrivacyModal-DvNCRnZT.js";import"./file-text-sy04pdBg.js";const a=()=>{const o=()=>{window.location.href="/"};return e.jsx(s,{isOpen:!0,onClose:o})};t.createRoot(document.getElementById("root")).render(e.jsx(r.StrictMode,{children:e.jsx(a,{})}));

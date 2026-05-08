@@ -1,10 +1,10 @@
-import React from 'react';
-import { X, HelpCircle } from 'lucide-react';
+import type { ReactNode } from "react";
+import { X, HelpCircle } from "lucide-react";
 
 interface FAQModalProps {
   isOpen: boolean;
   onClose: () => void;
-  faqData: Array<{ q: string; a: string | React.ReactNode }>;
+  faqData: Array<{ q: string; a: string | ReactNode }>;
 }
 
 export const FAQModal = ({ isOpen, onClose, faqData }: FAQModalProps) => {

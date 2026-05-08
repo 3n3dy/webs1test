@@ -1,4 +1,4 @@
-import { memo, useState, useRef } from "react"; // додай useRef
+import { memo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import MultiStepFormModal from "../MultiStepFormModal";
@@ -8,9 +8,10 @@ export const PersonalCalculationSection = memo(() => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // ⬇️ ДОДАЙ ЦЕ
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
+  const pointerStartX = useRef(0);
+  const pointerCurrentX = useRef(0);
+  const isPointerDragging = useRef(false);
+  const isSwipeGesture = useRef(false);
 
   const services = [
     [
@@ -61,36 +62,68 @@ export const PersonalCalculationSection = memo(() => {
     ],
   ];
 
-  const nextSlide = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentSlide((prev) => (prev + 1) % services.length);
+  const nextSlide = () => {
+    setCurrentSlide((prev) => Math.min(prev + 1, services.length - 1));
   };
 
-  const prevSlide = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentSlide((prev) => (prev - 1 + services.length) % services.length);
+  const prevSlide = () => {
+    setCurrentSlide((prev) => Math.max(prev - 1, 0));
   };
 
-  // ⬇️ ДОДАЙ ЦІ 3 ФУНКЦІЇ
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (
+      e.target instanceof HTMLElement &&
+      e.target.closest("[data-nav], [data-close], a, button")
+    ) {
+      return;
+    }
+
+    pointerStartX.current = e.clientX;
+    pointerCurrentX.current = e.clientX;
+    isPointerDragging.current = true;
+    isSwipeGesture.current = false;
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isPointerDragging.current) {
+      return;
+    }
+
+    pointerCurrentX.current = e.clientX;
+
+    if (Math.abs(pointerCurrentX.current - pointerStartX.current) > 8) {
+      isSwipeGesture.current = true;
+    }
   };
 
-  const handleTouchEnd = () => {
-    const diff = touchStartX.current - touchEndX.current;
+  const handlePointerEnd = () => {
+    if (!isPointerDragging.current) {
+      return;
+    }
+
+    const diff = pointerStartX.current - pointerCurrentX.current;
     const minSwipeDistance = 50;
 
     if (Math.abs(diff) > minSwipeDistance) {
-      if (diff > 0 && currentSlide < services.length - 1) {
-        setCurrentSlide((prev) => prev + 1);
-      } else if (diff < 0 && currentSlide > 0) {
-        setCurrentSlide((prev) => prev - 1);
+      if (diff > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
       }
     }
+
+    isPointerDragging.current = false;
+    window.setTimeout(() => {
+      isSwipeGesture.current = false;
+    }, 0);
+  };
+
+  const handleClosePanel = () => {
+    if (isSwipeGesture.current) {
+      return;
+    }
+
+    setIsFlipped(false);
   };
 
   return (
@@ -163,19 +196,23 @@ export const PersonalCalculationSection = memo(() => {
                     left: 0,
                     width: "100%",
                     zIndex: 10,
-                    pointerEvents: "none",
+                    pointerEvents: "auto",
                   }}
-                  // ⬇️ ДОДАЙ ЦІ 3 ОБРОБНИКИ
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerEnd}
+                  onPointerCancel={handlePointerEnd}
+                  onPointerLeave={handlePointerEnd}
                 >
-                  <div className="w-full bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-3xl shadow-2xl p-5 relative">
+                  <div
+                    className="w-full bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-3xl shadow-2xl p-5 relative select-none cursor-grab active:cursor-grabbing"
+                    style={{ touchAction: "pan-y" }}
+                  >
                     {/* Заголовок - МОЖНА КЛІКАТИ ДЛЯ ЗАКРИТТЯ */}
                     <h3
                       className="text-lg font-bold text-center mb-3 cursor-pointer"
-                      style={{ pointerEvents: "auto" }}
-                      onClick={() => setIsFlipped(false)}
+                      data-close
+                      onClick={handleClosePanel}
                     >
                       Окремі послуги ({currentSlide + 1}/{services.length})
                     </h3>
@@ -185,10 +222,12 @@ export const PersonalCalculationSection = memo(() => {
                       {/* Стрілка ліворуч */}
                       <button
                         data-nav
-                        onClick={prevSlide}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          prevSlide();
+                        }}
                         className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full hover:bg-white/10 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
                         disabled={currentSlide === 0}
-                        style={{ pointerEvents: "auto" }}
                       >
                         <ChevronDown className="w-5 h-5 rotate-90" />
                       </button>
@@ -218,10 +257,12 @@ export const PersonalCalculationSection = memo(() => {
                       {/* Стрілка праворуч */}
                       <button
                         data-nav
-                        onClick={nextSlide}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          nextSlide();
+                        }}
                         className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full hover:bg-white/10 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
                         disabled={currentSlide === services.length - 1}
-                        style={{ pointerEvents: "auto" }}
                       >
                         <ChevronDown className="w-5 h-5 -rotate-90" />
                       </button>
@@ -230,8 +271,8 @@ export const PersonalCalculationSection = memo(() => {
                     {/* Dots індикатор - МОЖНА КЛІКАТИ ДЛЯ ЗАКРИТТЯ */}
                     <div
                       className="flex justify-center gap-1.5 mt-3 cursor-pointer"
-                      style={{ pointerEvents: "auto" }}
-                      onClick={() => setIsFlipped(false)}
+                      data-close
+                      onClick={handleClosePanel}
                     >
                       {services.map((_, idx) => (
                         <div

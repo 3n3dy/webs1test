@@ -8,112 +8,132 @@ import {
   Check,
   FileText,
 } from "lucide-react";
+import {
+  createSubmissionTimestamp,
+  sanitizePhoneInput,
+  submitGoogleScriptForm,
+} from "../utils/formHelpers";
 
 interface MultiStepFormModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+const TOTAL_STEPS = 8;
+
+const INITIAL_FORM_DATA = {
+  companyName: "",
+  fullName: "",
+  position: "",
+  contacts: "",
+  phone: "",
+  industry: "",
+  employeeCount: "",
+  companyAge: "",
+  hasMissionValues: "",
+  informalEventsFrequency: "",
+  hasRituals: "",
+  teamAtmosphere: "",
+  hasOnboarding: "",
+  onboardingEase: "5",
+  knowsWhereToGoWithIdeas: "",
+  mainCommunicationChannel: "",
+  hasInfoGaps: "",
+  usesTaskManagers: "",
+  timeSpentExplaining: "",
+  hasKnowledgeBase: "",
+  hasOneOnOneMeetings: "",
+  hasProcessDocumentation: "",
+  whoControlsQuality: "",
+  hasFirefighting: "",
+  hasIrreplaceable: "",
+  howHandleVacations: "",
+  howHandleVacationsOther: "",
+  hasClearResponsibilities: "",
+  taskDuplicationFrequency: "",
+  deadlineAdherence: "5",
+  hasWorkSchedule: "",
+  hasWorkScheduleOther: "",
+  ownerOperationalPercent: "",
+  ownerOperationalPercentOther: "",
+  hasScheduledBreaks: "",
+  hasScheduledBreaksOther: "",
+  trustsTeam: "",
+  trustsTeamOther: "",
+  hasReportingSystem: "",
+  hasReportingSystemOther: "",
+  hasKPIs: "",
+  hasKPIsOther: "",
+  howMeasureAdminSuccess: "",
+  feedbackFrequency: "",
+  feedbackFrequencyOther: "",
+  mainStressSource: "",
+  hasTurnover: "",
+  hasTurnoverOther: "",
+  decisionSpeed: "",
+  decisionSpeedOther: "",
+  tasksLostInChats: "",
+  tasksLostInChatsOther: "",
+  resistanceToNewRules: "",
+  resistanceToNewRulesOther: "",
+  hasDepartmentConflicts: "",
+  mainProblemToSolve: "",
+  mainGoal: "",
+  mainGoalOther: "",
+  howHeardAbout: "",
+  howHeardAboutOther: "",
+  budget: "",
+  budgetOther: "",
+  idealSystemDescription: "",
+  readyForCall: "",
+};
+
+type MultiStepFormData = typeof INITIAL_FORM_DATA;
+
 const MultiStepFormModal = memo(
   ({ isOpen, onClose }: MultiStepFormModalProps) => {
     const [step, setStep] = useState(1);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const closeTimeoutRef = useRef<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
     const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
 
-    const [formData, setFormData] = useState({
-      // Блок 1: Ідентифікація
-      companyName: "",
-      fullName: "",
-      position: "",
-      contacts: "",
-      phone: "", // ✅ НОВИЙ ПУНКТ
-      industry: "",
-      employeeCount: "",
-      companyAge: "",
+    const [formData, setFormData] = useState<MultiStepFormData>(INITIAL_FORM_DATA);
 
-      // Блок 2: Корпоративна культура
-      hasMissionValues: "",
-      informalEventsFrequency: "",
-      hasRituals: "",
-      teamAtmosphere: "",
-      hasOnboarding: "",
-      onboardingEase: "5",
-      knowsWhereToGoWithIdeas: "",
+    const resetForm = () => {
+      setStep(1);
+      setIsSubmitting(false);
+      setIsSuccess(false);
+      setShowPrivacyPolicy(false);
+      setAgreedToPrivacy(false);
+      setFormData(INITIAL_FORM_DATA);
+    };
 
-      // Блок 3: Комунікації
-      mainCommunicationChannel: "",
-      hasInfoGaps: "",
-      usesTaskManagers: "",
-      timeSpentExplaining: "",
-      hasKnowledgeBase: "",
-      hasOneOnOneMeetings: "",
+    const handleClose = () => {
+      if (closeTimeoutRef.current !== null) {
+        window.clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
 
-      // Блок 4: Операційні процеси
-      hasProcessDocumentation: "",
-      whoControlsQuality: "",
-      hasFirefighting: "",
-      hasIrreplaceable: "",
-      howHandleVacations: "", // ✅ ЗМІНЕНО НА SELECT
-      howHandleVacationsOther: "", // ✅ ДЛЯ "ІНШЕ"
-      hasClearResponsibilities: "",
-      taskDuplicationFrequency: "",
+      resetForm();
+      onClose();
+    };
 
-      // Блок 5: Управління часом
-      deadlineAdherence: "5",
-      hasWorkSchedule: "",
-      hasWorkScheduleOther: "",
-      ownerOperationalPercent: "",
-      ownerOperationalPercentOther: "",
-      hasScheduledBreaks: "",
-      hasScheduledBreaksOther: "",
-
-      // Блок 6: Делегування та контроль
-      trustsTeam: "",
-      trustsTeamOther: "",
-      hasReportingSystem: "",
-      hasReportingSystemOther: "",
-      hasKPIs: "",
-      hasKPIsOther: "",
-      howMeasureAdminSuccess: "",
-      feedbackFrequency: "",
-      feedbackFrequencyOther: "",
-
-      // Блок 7: Проблемні зони
-      mainStressSource: "",
-      hasTurnover: "",
-      hasTurnoverOther: "",
-      decisionSpeed: "",
-      decisionSpeedOther: "",
-      tasksLostInChats: "",
-      tasksLostInChatsOther: "",
-      resistanceToNewRules: "",
-      resistanceToNewRulesOther: "",
-      hasDepartmentConflicts: "",
-
-      // Блок 8: Очікування
-      mainProblemToSolve: "",
-      mainGoal: "",
-      mainGoalOther: "",
-      howHeardAbout: "",
-      howHeardAboutOther: "",
-      budget: "", // ✅ ЗМІНЕНО НАЗВУ ПОЛЯ
-      budgetOther: "", // ✅ ДЛЯ "ІНШЕ"
-      // preferredFormat: '', // ✅ ВИДАЛЕНО
-      idealSystemDescription: "",
-      readyForCall: "",
-    });
     useEffect(() => {
       if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollTop = 0;
       }
     }, [step]);
 
-    // ✅ ВСТАВТЕ ВАШ GOOGLE SCRIPT URL ТУТ:
-    const GOOGLE_SCRIPT_URL =
-      "https://script.google.com/macros/s/AKfycbzVIp9HoUqL_Z1s3_J70BVqB4ieAQI81gFR_ql3UArRH5IrvEbLUlaVpBGZSgAB3kPc/exec";
+    useEffect(() => {
+      return () => {
+        if (closeTimeoutRef.current !== null) {
+          window.clearTimeout(closeTimeoutRef.current);
+        }
+      };
+    }, []);
 
     const handleSubmit = async () => {
       if (!agreedToPrivacy) {
@@ -124,104 +144,15 @@ const MultiStepFormModal = memo(
       setIsSubmitting(true);
       try {
         const payload = {
-          timestamp: new Date().toLocaleString("uk-UA"),
+          timestamp: createSubmissionTimestamp(),
           ...formData,
         };
 
-        console.log("📤 Відправка даних:", payload);
-
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "text/plain",
-          },
-          body: JSON.stringify(payload),
-          redirect: "follow",
-        });
-
-        console.log("📥 Відповідь:", response.status);
-
-        if (response.ok || response.redirected) {
-          console.log("✅ Дані успішно відправлені!");
-          setIsSuccess(true);
-          setTimeout(() => {
-            onClose();
-            setStep(1);
-            setIsSuccess(false);
-            setAgreedToPrivacy(false);
-            // Скидання форми
-            setFormData({
-              companyName: "",
-              fullName: "",
-              position: "",
-              contacts: "",
-              phone: "",
-              industry: "",
-              employeeCount: "",
-              companyAge: "",
-              hasMissionValues: "",
-              informalEventsFrequency: "",
-              hasRituals: "",
-              teamAtmosphere: "",
-              hasOnboarding: "",
-              onboardingEase: "5",
-              knowsWhereToGoWithIdeas: "",
-              mainCommunicationChannel: "",
-              hasInfoGaps: "",
-              usesTaskManagers: "",
-              timeSpentExplaining: "",
-              hasKnowledgeBase: "",
-              hasOneOnOneMeetings: "",
-              hasProcessDocumentation: "",
-              whoControlsQuality: "",
-              hasFirefighting: "",
-              hasIrreplaceable: "",
-              howHandleVacations: "",
-              howHandleVacationsOther: "",
-              hasClearResponsibilities: "",
-              taskDuplicationFrequency: "",
-              deadlineAdherence: "5",
-              hasWorkSchedule: "",
-              hasWorkScheduleOther: "",
-              ownerOperationalPercent: "",
-              ownerOperationalPercentOther: "",
-              hasScheduledBreaks: "",
-              hasScheduledBreaksOther: "",
-              trustsTeam: "",
-              trustsTeamOther: "",
-              hasReportingSystem: "",
-              hasReportingSystemOther: "",
-              hasKPIs: "",
-              hasKPIsOther: "",
-              howMeasureAdminSuccess: "",
-              feedbackFrequency: "",
-              feedbackFrequencyOther: "",
-              mainStressSource: "",
-              hasTurnover: "",
-              hasTurnoverOther: "",
-              decisionSpeed: "",
-              decisionSpeedOther: "",
-              tasksLostInChats: "",
-              tasksLostInChatsOther: "",
-              resistanceToNewRules: "",
-              resistanceToNewRulesOther: "",
-              hasDepartmentConflicts: "",
-              mainProblemToSolve: "",
-              mainGoal: "",
-              mainGoalOther: "",
-              howHeardAbout: "",
-              howHeardAboutOther: "",
-              budget: "",
-              budgetOther: "",
-              idealSystemDescription: "",
-              readyForCall: "",
-            });
-          }, 3000);
-        } else {
-          throw new Error(`HTTP ${response.status}`);
-        }
+        await submitGoogleScriptForm(payload);
+        setIsSuccess(true);
+        closeTimeoutRef.current = window.setTimeout(handleClose, 3000);
       } catch (error) {
-        console.error("❌ Помилка:", error);
+        console.error("Survey form submission failed", error);
         alert(
           "Помилка відправки. Спробуйте ще раз або зв'яжіться з нами: hanna.ws.g@gmail.com",
         );
@@ -230,7 +161,7 @@ const MultiStepFormModal = memo(
     };
 
     const nextStep = () => {
-      if (step < 8) {
+      if (step < TOTAL_STEPS) {
         setStep(step + 1);
       }
     };
@@ -247,7 +178,7 @@ const MultiStepFormModal = memo(
       <AnimatePresence>
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={onClose}
+          onClick={handleClose}
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -262,10 +193,10 @@ const MultiStepFormModal = memo(
                 <h2 className="text-3xl font-semibold mb-1">
                   Діагностика компанії
                 </h2>
-                <p className="text-purple-100">Крок {step} з 8</p>
+                <p className="text-purple-100">Крок {step} з {TOTAL_STEPS}</p>
               </div>
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="hover:bg-white/20 rounded-full p-2 transition-colors"
               >
                 <X size={28} />
@@ -277,7 +208,7 @@ const MultiStepFormModal = memo(
               <motion.div
                 className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
                 initial={{ width: 0 }}
-                animate={{ width: `${(step / 8) * 100}%` }}
+                animate={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
                 transition={{ duration: 0.3 }}
               />
             </div>
@@ -377,11 +308,10 @@ const MultiStepFormModal = memo(
                         required
                         value={formData.phone}
                         onChange={(e) => {
-                          let value = e.target.value.replace(/\D/g, "");
-                          if (!value.startsWith("380")) {
-                            value = "380" + value;
-                          }
-                          setFormData({ ...formData, phone: value });
+                          setFormData({
+                            ...formData,
+                            phone: sanitizePhoneInput(e.target.value),
+                          });
                         }}
                         className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition-colors"
                         placeholder="380950571649"

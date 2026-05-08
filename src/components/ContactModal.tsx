@@ -1,13 +1,26 @@
-import { useState, memo } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Check, FileText } from "lucide-react";
+import {
+  createSubmissionTimestamp,
+  sanitizePhoneInput,
+  submitGoogleScriptForm,
+} from "../utils/formHelpers";
 
 interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const INITIAL_FORM_DATA = {
+type ContactFormData = {
+  companyName: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  comment: string;
+};
+
+const INITIAL_FORM_DATA: ContactFormData = {
   companyName: "",
   fullName: "",
   phone: "",
@@ -21,16 +34,33 @@ const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
-
-  const GOOGLE_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbzVIp9HoUqL_Z1s3_J70BVqB4ieAQI81gFR_ql3UArRH5IrvEbLUlaVpBGZSgAB3kPc/exec";
+  const closeTimeoutRef = useRef<number | null>(null);
 
   const resetForm = () => {
+    setIsSubmitting(false);
     setIsSuccess(false);
     setAgreedToPrivacy(false);
     setShowPrivacyPolicy(false);
     setFormData(INITIAL_FORM_DATA);
   };
+
+  const handleClose = () => {
+    if (closeTimeoutRef.current !== null) {
+      window.clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+
+    resetForm();
+    onClose();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current !== null) {
+        window.clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,29 +73,14 @@ const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
     setIsSubmitting(true);
     try {
       const payload = {
-        timestamp: new Date().toLocaleString("uk-UA"),
+        timestamp: createSubmissionTimestamp(),
         type: "consultation",
         ...formData,
       };
 
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain",
-        },
-        body: JSON.stringify(payload),
-        redirect: "follow",
-      });
-
-      if (response.ok || response.redirected) {
-        setIsSuccess(true);
-        setTimeout(() => {
-          onClose();
-          resetForm();
-        }, 3000);
-      } else {
-        throw new Error(`HTTP ${response.status}`);
-      }
+      await submitGoogleScriptForm(payload);
+      setIsSuccess(true);
+      closeTimeoutRef.current = window.setTimeout(handleClose, 3000);
     } catch (error) {
       console.error("Contact form submission failed", error);
       alert(
@@ -98,7 +113,7 @@ const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
               </p>
             </div>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="hover:bg-white/20 rounded-full p-2 transition-colors"
             >
               <X size={28} />
@@ -152,11 +167,10 @@ const ContactModal = memo(({ isOpen, onClose }: ContactModalProps) => {
                     required
                     value={formData.phone}
                     onChange={(e) => {
-                      let value = e.target.value.replace(/\D/g, "");
-                      if (!value.startsWith("380")) {
-                        value = "380" + value;
-                      }
-                      setFormData({ ...formData, phone: value });
+                      setFormData({
+                        ...formData,
+                        phone: sanitizePhoneInput(e.target.value),
+                      });
                     }}
                     className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition-colors"
                     placeholder="380950571649"

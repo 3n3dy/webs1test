@@ -1,6 +1,11 @@
-import React from 'react';
+import type { ReactNode } from "react";
 
-export const faqData = [
+export type FAQItem = {
+  q: string;
+  a: string | ReactNode;
+};
+
+export const faqData: FAQItem[] = [
   {
         q: "Яка ключова перевага вашого підходу?",
         a: (
@@ -106,4 +111,4 @@ export const faqData = [
           </>
         ),
       },
-    ];
+];
